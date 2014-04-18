@@ -160,14 +160,17 @@ namespace NHkey
 
                 if (!success)
                     System.Windows.MessageBox.Show("Lo siento, no se pudo registrar la combinación",
-                        "Error al registrar combinacion", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                                                   "Error al registrar combinacion", 
+                                                   System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error
+                                                   );
             }
         }
 
         private void SaveHotkeys()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Hotkey[]));
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
+
             try
             {
                 saveFile = File.Create(SaveFilePath);
@@ -178,7 +181,7 @@ namespace NHkey
             }
             catch (IOException except)
             {
-                //System.Windows.MessageBox.Show(except.Message);
+                throw except;
             }
             finally
             {
@@ -190,7 +193,7 @@ namespace NHkey
         private void LoadHotkeys()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Hotkey[]));
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
 
             try
             {

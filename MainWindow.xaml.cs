@@ -34,7 +34,6 @@ namespace NHkey
 
         public MainWindow()
         {
-            
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
 
             // MyNotifyIcon.Icon = new System.Drawing.Icon(@"file:\icon.png");
@@ -55,6 +54,7 @@ namespace NHkey
 
         private void agregarButton_Click(object sender, RoutedEventArgs e)
         {
+            throw new ArgumentNullException("Error occurrred!!!!");
             SpawnHotkeyConfig();
         }
 

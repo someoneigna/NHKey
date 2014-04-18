@@ -1,0 +1,21 @@
+﻿<Application x:Class="NHkey.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            StartupUri="MainWindow.xaml">
+    <JumpList.JumpList>
+        <JumpList x:Name="jumpList">
+        </JumpList>
+    </JumpList.JumpList>
+<Application.Resources>
+    
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                    Source="Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+        </ResourceDictionary>
+</Application.Resources>
+
+</Application>
+    

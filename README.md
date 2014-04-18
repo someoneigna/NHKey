@@ -9,6 +9,9 @@ A Windows hotkey manager made with C# and WPF (.net 4.0). Overrides the window m
 Just copy the binary in an accesible folder and is ready to be used.
 I will provide a installer in the future (I plan to also write one >_<).
 
+----------------------------------------------
+
+## Screenshots
 
 ##### Here is the main window, you can also drag and drop a program to the list and the hotkey creation window will be called with the program route.
 ![Main Window](Readme_Resources/main_window.jpg?raw=true)

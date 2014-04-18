@@ -42,8 +42,9 @@ namespace NHkey
 
             DataContext = ResultHotkey;
 
-            ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
-            //parametersField.Text = ResultHotkey.ParametersString;
+            // Fill icon with hotkey path (in case of editing a valid hotkey)
+            if (ResultHotkey.FilePath != null)
+                ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
         }
 
         
@@ -58,6 +59,8 @@ namespace NHkey
             if (dialog.FileName != null && dialog.FileName.Length > 0)
             {
                 ResultHotkey.FilePath = dialog.FileName;
+                ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
+
                 programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
             }
 
@@ -103,13 +106,6 @@ namespace NHkey
             tempBind.Modifiers = Keyboard.Modifiers | tempBind.Modifiers;
             ResultHotkey.SwitchBind(tempBind);
             combinationField.Text = ResultHotkey.HotkeyText;
-        }
-
-
-        private void programField_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
-            programField.Text = programField.Text.Substring(programField.Text.LastIndexOf("\\") + 1);
         }
 
     }

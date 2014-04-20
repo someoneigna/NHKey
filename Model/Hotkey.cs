@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace NHkey
+namespace NHkey.Model
 {
     [DataContract(Name = "Hotkey")]
     public class Hotkey : IDisposable, INotifyPropertyChanged
@@ -33,7 +33,7 @@ namespace NHkey
         }
 
         [DataMember]
-        public KeyBind Bind { get; set; }
+        public VirtualKeyBinding Bind { get; set; }
 
         [DataMember]
         public string FilePath
@@ -84,7 +84,7 @@ namespace NHkey
         {
             Handle = wHandle;
             registered = false;
-            Bind = new KeyBind(vkey, vmod);
+            Bind = new VirtualKeyBinding(vkey, vmod);
             Id = GetHashCode();
             OnPropertyChanged("HotkeyText");
         }
@@ -108,12 +108,28 @@ namespace NHkey
         #endregion
 
         #region Public Methods
+
+        public void SwitchBind(System.Windows.Input.KeyBinding tempBind)
+        {
+            Bind = new VirtualKeyBinding(tempBind);
+            OnPropertyChanged("HotkeyText");
+        }
+
+        /// <summary>
+        /// Changes the hotkey window handle and registers the hotkey.
+        /// </summary>
+        /// <param name="newHandle">A new window handle.</param>
+        /// <returns>True if hotkey registered correctly, false otherwise.</returns>
         public bool Reload(IntPtr newHandle)
         {
             Unregister();
+
             Handle = newHandle;
+
             Id = GetHashCode();
+
             registered = Register();
+
             return registered;
         }
 
@@ -127,10 +143,6 @@ namespace NHkey
             return UnregisterHotKey(Handle, Id);
         }
         
-        public void Execute()
-        {
-            Process.Start(FilePath, Parameters);
-        }
 
         public override string ToString()
         {
@@ -159,8 +171,7 @@ namespace NHkey
 
         public void Dispose()
         {
-            Unregister();
-            registered = false;
+            registered = Unregister();
             GC.SuppressFinalize(this);
         }
 
@@ -174,12 +185,5 @@ namespace NHkey
             }
         }
 
-        public void SwitchBind(System.Windows.Input.KeyBinding tempBind)
-        {
-            int vkey = KeyInterop.VirtualKeyFromKey(tempBind.Key);
-            int vmod = (int)tempBind.Modifiers;
-            Bind = new KeyBind(vkey, vmod);
-            OnPropertyChanged("HotkeyText");
-        }
     }
 }

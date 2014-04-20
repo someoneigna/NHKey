@@ -22,6 +22,8 @@ using System.Runtime.Serialization;
 using Microsoft.Win32;
 using System.Windows.Shell;
 
+using NHkey.Controllers;
+using NHkey.Model;
 
 namespace NHkey
 {
@@ -54,7 +56,6 @@ namespace NHkey
 
         private void agregarButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new ArgumentNullException("Error occurrred!!!!");
             SpawnHotkeyConfig();
         }
 
@@ -210,9 +211,9 @@ namespace NHkey
             dialog.ShowDialog();
 
             if(dialog.DialogResult.Equals(true))
-                appController.SetOptions(dialog.GetOptions());
+                appController.SetOptions(dialog.OptionViewModel);
+
             dialog.Close();
-            
         }
 
         private void hotkeyList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -234,8 +235,8 @@ namespace NHkey
                 if(hotkeyList.SelectedItem != null)
                 {
                     Hotkey hk = GetSelectedHotkey(hotkeyList);
-                    if (hk != null) 
-                        hk.Execute();
+                    if (hk != null)
+                        appController.Execute(hk.FilePath, hk.Parameters);
                 }
             }
         }

@@ -16,6 +16,9 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.ComponentModel;
 
+using NHkey.Model;
+using NHkey.Controllers;
+
 namespace NHkey
 {
     /// <summary>
@@ -44,7 +47,10 @@ namespace NHkey
 
             // Fill icon with hotkey path (in case of editing a valid hotkey)
             if (ResultHotkey.FilePath != null)
+            {
                 ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
+                programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
+            }
         }
 
         

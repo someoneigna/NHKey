@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHkey
+namespace NHkey.Model
 {
     interface IHotkeyFactory
     {

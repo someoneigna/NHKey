@@ -10,12 +10,17 @@ using System.Text;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
-namespace NHkey
+using NHkey.Data;
+using NHkey.Model;
+
+namespace NHkey.Controllers
 {
+
+    // This should disolve into ViewModels. I have to keep refactoring it.
     public class NHKeyController : INotifyPropertyChanged
     {
-        IDictionary<int, Hotkey> hotkeys;
-        public IDictionary<int, Hotkey> Hotkeys { get { return hotkeys; } set { hotkeys = value; OnPropertyChanged("Hotkeys"); } }
+        HotkeyRepository repository;
+        public IDictionary<int, Hotkey> Hotkeys { get; protected set; }
 
         private static string SaveFilePath = Directory.GetCurrentDirectory() + "\\" + "hotkeys.data";
         private static Options options;
@@ -36,9 +41,14 @@ namespace NHkey
             //Handle to register Hotkeys with WinAPI
             options = new Options();
             WindowHandle = windowHandle;
-            hotkeys = new Dictionary<int, Hotkey>();
+            
+            Hotkeys = new Dictionary<int, Hotkey>();
+
             hotkeyFactory = new HotkeyFactory(windowHandle);
+            
             RecentlyUsed = new List<Hotkey>();
+            
+            repository = new HotkeyRepository(new JSONHotkeyContext(SaveFilePath));
         }
 
         public NHKeyController() : this(IntPtr.Zero)
@@ -48,26 +58,41 @@ namespace NHkey
         public void OnLoad()
         {
             options.Load();
+            repository.Load();
+
+            foreach (var hotkey in repository.GetAll())
+            {
+                hotkey.Icon = GetIcon(hotkey.FilePath);
+                hotkey.Reload(WindowHandle);
+                Hotkeys.Add(hotkey.GetHashCode(), hotkey);
+            }
+
             this.Hidden = options.Hidden;
         }
 
         public void OnStart()
         {
-            LoadHotkeys();
+            
         }
 
         public void OnClose()
         {
-            SaveHotkeys();
+            foreach (var hotkey in Hotkeys.Values)
+            {
+                hotkey.Dispose();
+            }
+
+            repository.Save();
             options.Save();
         }
 
         public void ActivateHotkey(int id)
         {
-            if (hotkeys.ContainsKey(id))
+            if (Hotkeys.ContainsKey(id))
             {
-                RecentlyUsed.Add(hotkeys[id]);
-                hotkeys[id].Execute();
+                RecentlyUsed.Add(Hotkeys[id]);
+                var hotkey = Hotkeys[id];
+                Execute (hotkey.FilePath, hotkey.Parameters);
             }
         }
 
@@ -91,14 +116,25 @@ namespace NHkey
             }
 
             bool success = false;
+            
+            // Unregister hotkey from global event loop
+            success = orig.Unregister();
+
             replace.Reload(WindowHandle);
+            repository.Remove(orig);
+            repository.Add(replace);
+
+            Hotkeys.Remove(orig.GetHashCode());
+            Hotkeys.Add(replace.GetHashCode(), replace);
+
+            /*
             if (hotkeys.ContainsKey(orig.GetHashCode()))
             {
                 orig.Unregister();
                 hotkeys.Remove(orig.GetHashCode());
                 AddNewHotkey(replace);
                 success = true;
-            }
+            }*/
             return success;
         }
 
@@ -107,15 +143,20 @@ namespace NHkey
             if (hotkey == null) { throw new ArgumentNullException("hotkey", "Cant add a null hotkey."); }
             bool completed = false;
 
-            hotkey.Reload(WindowHandle);
-            
+            // This seems wrong
+            completed = hotkey.Reload(WindowHandle);
+
+            repository.Add(hotkey);
+
             //Add hotkey to ListBox
+
+            /*
             if (!hotkeys.ContainsKey(hotkey.GetHashCode()))
             {
                 hotkey.Icon = NHKeyController.GetIcon(hotkey.FilePath);
                 hotkeys.Add(hotkey.GetHashCode(), hotkey);
                 completed = true;
-            }
+            }*/
             return completed;
         }
 
@@ -146,99 +187,17 @@ namespace NHkey
             return result;
         }
 
-        private void AddSavedHotkey(Hotkey hk)
-        {
-            bool success = false;
-
-            //Add hotkey to ListBox
-            if (!hotkeys.ContainsKey(hk.GetHashCode()))
-            {
-
-                success = hk.Reload(WindowHandle);
-                hk.Icon = NHKeyController.GetIcon(hk.FilePath);
-                hotkeys.Add(hk.GetHashCode(), hk);
-
-                if (!success)
-                    System.Windows.MessageBox.Show("Lo siento, no se pudo registrar la combinación",
-                                                   "Error al registrar combinacion", 
-                                                   System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error
-                                                   );
-            }
-        }
-
-        private void SaveHotkeys()
-        {
-            FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
-
-            try
-            {
-                saveFile = File.Create(SaveFilePath);
-                if (saveFile.CanWrite)
-                {
-                    serializer.WriteObject(saveFile, hotkeys.Values.ToArray());
-                }
-            }
-            catch (IOException except)
-            {
-                throw except;
-            }
-            finally
-            {
-                if (saveFile != null)
-                    saveFile.Close();
-            }
-        }
-
-        private void LoadHotkeys()
-        {
-            FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
-
-            try
-            {
-                saveFile = File.OpenRead(SaveFilePath);
-                if (saveFile.CanRead)
-                {
-                    Hotkey[] hotkeys = null;
-                    try
-                    {
-                        saveFile.Position = 0;
-                        hotkeys = (Hotkey[])serializer.ReadObject(saveFile);
-                        for (int i = 0; i < hotkeys.Length; i++)
-                        {
-                            if (hotkeys[i] != null && hotkeys[i].FilePath != null)
-                            {
-                                AddSavedHotkey(hotkeys[i]);
-                            }
-                        }
-                    }
-                    catch (SerializationException ex)
-                    {
-                        //System.Windows.MessageBox.Show(ex.Message);
-                    }
-
-                }
-            }
-            catch (IOException except)
-            {
-                //System.Windows.MessageBox.Show(except.Message);
-            }
-            finally
-            {
-                if (saveFile != null)
-                    saveFile.Close();
-            }
-        }
-
         public IDictionary<int, Hotkey> GetHotkeySource()
         {
-            return hotkeys;
+            if (Hotkeys == null)
+                repository.Load();
+
+            return Hotkeys;
         }
 
         public Options GetOptions()
         {
-            return new Options(options);
+            return options;
         }
 
         public void SetOptions(Options options)
@@ -255,5 +214,11 @@ namespace NHkey
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
+
+        public void Execute(string programPath, string parameters)
+        {
+            System.Diagnostics.Process.Start(programPath, parameters);
+        }
+        
     }
 }

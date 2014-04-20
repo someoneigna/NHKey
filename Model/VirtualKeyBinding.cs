@@ -5,10 +5,10 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 
-namespace NHkey
+namespace NHkey.Model
 {
     [DataContract]
-    public class KeyBind
+    public class VirtualKeyBinding : IVirtualKeyBinding
     {
         private int key;
         private int mod;
@@ -29,22 +29,29 @@ namespace NHkey
         }
         #endregion
 
-        public KeyBind(int vkey, int vmod)
+        public VirtualKeyBinding(int vkey, int vmod)
         {
             Key = vkey;
             Mod = vmod;
         }
 
-        public KeyBind(KeyBind other) : this(other.Key, other.Mod)
+        public VirtualKeyBinding(VirtualKeyBinding other) : this(other.Key, other.Mod)
         {
         }
         
+        public VirtualKeyBinding(KeyBinding other)
+        {
+            Key = KeyInterop.VirtualKeyFromKey(other.Key);
+            Mod = (int)other.Modifiers;
+        }
+
 
         public KeyBinding GetInputBinding()
         {
             KeyBinding keybind = new KeyBinding();
             keybind.Key = KeyInterop.KeyFromVirtualKey(Key);
             keybind.Modifiers = ModifierKeys.None + Mod;
+
             return keybind;
         }
 

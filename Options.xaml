@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner" 
         VerticalContentAlignment="Center" 
         SizeToContent="WidthAndHeight" WindowStyle="ToolWindow">
-    <Grid >
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
             <RowDefinition Height="30"/>
@@ -22,8 +22,8 @@
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         
-        <CheckBox IsChecked="{Binding ElementName=Source, UpdateSourceTrigger=PropertyChanged,Path=Hidden}" Content="Iniciar invisible"  Name="initHiddenV" Checked="initHiddenV_Checked" IsEnabled="True"  Grid.Row="1"  Grid.Column="1"/>
-        <CheckBox IsChecked="{Binding ElementName=Source, Path=WindowsStartup, UpdateSourceTrigger=PropertyChanged}" Content="Iniciar con Windows" Name="windowsStartUpV"  Checked="windowsStartUpV_Checked" Padding="{Binding ElementName=initHiddenV}" Grid.Row="2"  Grid.Column="1"/>
+        <CheckBox IsChecked="{Binding Path=Hidden}" Content="Iniciar invisible"  Name="initHiddenV"  IsEnabled="True"  Grid.Row="1"  Grid.Column="1"/>
+        <CheckBox IsChecked="{Binding Path=WindowsStartUp}"  Content="Iniciar con Windows" Name="windowsStartUpV"  Grid.Row="2"  Grid.Column="1"/>
 
         <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="1">
             <Button DockPanel.Dock="Left" Content="    Guardar     "  Name="guardarButton" Click="guardarButton_Click"  />

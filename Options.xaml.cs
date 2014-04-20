@@ -22,42 +22,13 @@ namespace NHkey
     {
         Options option = new Options();
 
-        public bool Hidden
-        {
-            get
-            {
-                return option.Hidden;
-            }
-            set
-            {
-                option.Hidden = value;
-               
-            }
-        }
+        public Options OptionViewModel { get; protected set; }
 
-        public bool WindowsStartup
-        {
-            get
-            {
-                return option.WindowsStartup;
-            }
-            set
-            {
-                option.WindowsStartup = value;
-            }
-        }
-
-
-        public Opciones(Options initialOptions = null)
+        public Opciones(Options initialOptions)
         {
             InitializeComponent();
-            
-            if ( initialOptions != null )
-            {
-                option = initialOptions;
-                initHiddenV.IsChecked = Hidden;
-                windowsStartUpV.IsChecked = WindowsStartup;
-            }
+            OptionViewModel = initialOptions;
+            DataContext = OptionViewModel;
         }
 
         public Options GetOptions()
@@ -68,28 +39,15 @@ namespace NHkey
         private void guardarButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+            OptionViewModel.Save();
             Close();
         }
 
         private void cancelarButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-            option = null;
+            OptionViewModel = null;
             Close();
         }
-
-        private void initHiddenV_Checked(object sender, RoutedEventArgs e)
-        {
-            Hidden = !Hidden;
-        }
-
-        private void windowsStartUpV_Checked(object sender, RoutedEventArgs e)
-        {
-            WindowsStartup = !WindowsStartup;
-        }
-
-       
-
-        
     }
 }

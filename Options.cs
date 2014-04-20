@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Microsoft.Win32;
+using System.ComponentModel;
 
 namespace NHkey
 {
-    public class Options
+    public class Options : INotifyPropertyChanged
     {
         public enum Field
         {
@@ -16,6 +17,9 @@ namespace NHkey
             MAX_OPTIONS = 2
         };
 
+        private readonly string saveFile = Directory.GetCurrentDirectory() + "\\" + "config.data";
+
+        private bool loaded;
         private const int FIELD_NAME_POS = 0;
         private const int VALUE_POS = 1;
         private bool[] value = new bool[(int)Field.MAX_OPTIONS];
@@ -24,12 +28,14 @@ namespace NHkey
 
         public Options()
         {
-
             for (int i = 0; i < (int)Field.MAX_OPTIONS; i++)
             {
                 str[i] = Enum.GetName(typeof(Field), i);
                 map.Add(str[i], value[i]);
             }
+
+            if (!loaded)
+                Load();
         }
 
         public Options(Options opt) : this()
@@ -40,7 +46,6 @@ namespace NHkey
             }
         }
 
-        private string saveFile = Directory.GetCurrentDirectory() + "\\" + "config.data";
 
         public bool Hidden
         {
@@ -51,6 +56,7 @@ namespace NHkey
             set
             {
                 this.value[(int)Field.INIT_HIDDEN] = value;
+                OnPropertyChanged("Hidden");
             }
         }
 
@@ -63,6 +69,7 @@ namespace NHkey
             set
             {
                 this.value[(int)Field.START_WITH_WINDOWS] = value;
+                OnPropertyChanged("WindowsStartup");
             }
         }
 
@@ -74,24 +81,18 @@ namespace NHkey
 
         private void RegisterAppInit()
         {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
             if (this.WindowsStartup)
             {
-                RegistryKey add = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                add.SetValue("NHKey", "\"" + System.Windows.Forms.Application.ExecutablePath + "\"");
+                key.SetValue("NHKey", "\"" + System.Windows.Forms.Application.ExecutablePath + "\"");
             }
             else
             {
-
-                RegistryKey del = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                bool found = false;
-                try
-                {
-                    del.DeleteValue("NHKey");
-                }
-                catch (ArgumentException except)
-                {
-                }
+                key.DeleteValue("NHKey", false);
             }
+            
+            key.Close();
         }
 
         private void WriteSaveFile()
@@ -161,6 +162,15 @@ namespace NHkey
         public bool GetValue(string type)
         {
             return map[type];
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(string property = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(property));
         }
     }
 }

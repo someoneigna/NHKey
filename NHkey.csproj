@@ -79,10 +79,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="HotkeyFactory.cs" />
-    <Compile Include="IHotkeyFactory.cs" />
-    <Compile Include="KeyBind.cs" />
-    <Compile Include="NHKeyController.cs" />
+    <Compile Include="Model\HotkeyFactory.cs" />
+    <Compile Include="Data\HotkeyRepository.cs" />
+    <Compile Include="Data\IContext.cs" />
+    <Compile Include="Model\IHotkeyFactory.cs" />
+    <Compile Include="Data\IRepository.cs" />
+    <Compile Include="Model\IVirtualKeyBinding.cs" />
+    <Compile Include="Data\JSONHotkeyContext.cs" />
+    <Compile Include="Model\VirtualKeyBinding.cs" />
+    <Compile Include="Controllers\NHKeyController.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
@@ -99,7 +104,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Hotkey.cs" />
+    <Compile Include="Model\Hotkey.cs" />
     <Compile Include="HotkeyConfig.xaml.cs">
       <DependentUpon>HotkeyConfig.xaml</DependentUpon>
     </Compile>
@@ -160,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />
+    <Folder Include="ViewModel\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.PNG" />

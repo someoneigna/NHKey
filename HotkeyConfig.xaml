@@ -3,9 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:bindPath="clr-namespace:NHkey"
         Title="Hotkey Creation" SizeToContent="WidthAndHeight" Name="NHKey" HorizontalAlignment="Center" VerticalAlignment="Center">
-    <Window.Resources>
-        <bindPath:Hotkey x:Key="HotkeyBind"/>
-    </Window.Resources>
     
     <Grid Name="grid" AllowDrop="False" Background="{DynamicResource WindowBackgroundBrush}">
         <Grid.RowDefinitions>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHkey
+namespace NHkey.Model
 {
     /// <summary>
     /// Creates hotkey and handles at disposal windows hotkey unregistration.

@@ -91,7 +91,7 @@
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Options.cs" />
+    <Compile Include="Model\Options.cs" />
     <Page Include="HotkeyConfig.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

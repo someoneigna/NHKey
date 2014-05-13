@@ -1,0 +1,47 @@
+﻿<Window x:Name="OptionWindow" x:Class="NHkey.View.OptionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ResourceKey=OptionMenuTitle}" Background="{StaticResource WindowBackgroundBrush}" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        WindowStartupLocation="CenterOwner" 
+        VerticalContentAlignment="Center" 
+        SizeToContent="WidthAndHeight" WindowStyle="ToolWindow"
+    >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="30"/>     <!-- Hidden Init checkbox -->
+            <RowDefinition Height="30"/>     <!-- Windows Init checkbox -->
+            
+            <RowDefinition Height="20"/>     <!-- Language label -->
+            <RowDefinition Height="24"/>     <!-- Language combobox -->
+
+            <!-- Buttons -->
+            <!--
+            <RowDefinition Height="15"/>   --> <!-- Separator -->
+            <!--
+            <RowDefinition Height="25"/>
+            -->
+            
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        
+        <CheckBox IsChecked="{Binding Path=Hidden}" Content="{DynamicResource InitHidden}"  Name="initHiddenV"  IsEnabled="True"  Grid.Row="1"  Grid.Column="1" FontSize="14"/>
+        <CheckBox IsChecked="{Binding Path=WindowsStartUp}"  Content="{DynamicResource InitWithWindows}" Name="windowsStartUpV"  Grid.Row="2"  Grid.Column="1" FontSize="14"/>
+        <Label Content="{DynamicResource LanguageLabel}" Grid.Row="3" Grid.Column="1" FontSize="14" />
+        <ComboBox SelectedItem="{Binding Path=Language}" ItemsSource="{Binding Path=AvailableLanguages}" Name="languageChosen" Grid.Row="4" Grid.Column="1" SelectionChanged="languageChosen_SelectionChanged"/>
+
+        <!-- Save and cancel buttons -->
+        <!--<DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="6" Grid.Column="1">
+            <Button DockPanel.Dock="Left" Content="{DynamicResource SaveButton}"  Name="guardarButton" Click="guardarButton_Click" Width="70" Margin="3,0,0,0" FontSize="14"  />
+            <Button DockPanel.Dock="Right" Content="{DynamicResource CancelButton}" Name="cancelarButton" Click="cancelarButton_Click" Width="70" FontSize="14"  />
+        </DockPanel>-->
+    </Grid>
+</Window>

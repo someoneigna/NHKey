@@ -17,64 +17,56 @@ using System.Drawing.Imaging;
 using System.ComponentModel;
 
 using NHkey.Model;
-using NHkey.Controllers;
 
-namespace NHkey
+namespace NHkey.View
 {
     /// <summary>
-    /// Lógica de interacción para hotkey_config.xaml
+    /// Handles the creation and edition of hotkeys.
     /// </summary>
-    public partial class HotkeyConfig : Window
+    public partial class HotkeyConfigDialog : Window
     {
         private KeyBinding tempBind = new KeyBinding();
-        
-        public Hotkey ResultHotkey { get; protected set; }
 
-        private static string GetBindString(Key key, ModifierKeys mod)
-        {
-            KeyBinding bind = new KeyBinding();
-            bind.Key = key;
-            bind.Modifiers = mod;
-            return bind.ToString();
-        }
-        public HotkeyConfig(Hotkey editHotkey = null)
+        public HotkeyAssociation ResultHotkey { get; protected set; }
+
+        public HotkeyConfigDialog(HotkeyAssociation editHotkey = null)
         {
             InitializeComponent();
 
-            ResultHotkey = (editHotkey != null) ? new Hotkey(editHotkey) : new Hotkey();
+            ResultHotkey = (editHotkey != null) ? new HotkeyAssociation(editHotkey) : new HotkeyAssociation();
 
             DataContext = ResultHotkey;
 
             // Fill icon with hotkey path (in case of editing a valid hotkey)
             if (ResultHotkey.FilePath != null)
             {
-                ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
                 programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
+                if (ResultHotkey.Icon == null)
+                    ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
+                
             }
+            combinationField.Text = ResultHotkey.ToString();
         }
 
-        
         private void searchProgramButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.CheckFileExists = true;
-            dialog.Title = "Elija un programa:";
+            dialog.Title = FindResource("SearchProgramTitle") as string;
             dialog.Multiselect = false;
             dialog.ShowDialog();
 
-            if (dialog.FileName != null && dialog.FileName.Length > 0)
+            if (!string.IsNullOrEmpty(dialog.FileName))
             {
                 ResultHotkey.FilePath = dialog.FileName;
-                ResultHotkey.Icon = NHKeyController.GetIcon(ResultHotkey.FilePath);
+                ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
 
                 programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
             }
 
-            combinationField.Focus();    
+            combinationField.Focus();
         }
 
-        
-      
         private void combinationField_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             combinationField.Text = "";
@@ -91,7 +83,7 @@ namespace NHkey
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ResultHotkey.Name == "" || ResultHotkey.FilePath == "" || ResultHotkey.Bind == null)
+            if (string.IsNullOrEmpty(ResultHotkey.Name) || ResultHotkey.FilePath == "" || ResultHotkey.Hotkey.Invalid)
             {
                 UnfilledFieldsMsgBox();
                 return;
@@ -103,15 +95,16 @@ namespace NHkey
 
         private void UnfilledFieldsMsgBox()
         {
-            string message = "Deben llenarse los campos antes de continuar.";
-            MessageBox.Show(message, "Campos invalidos", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            string message = FindResource("UnfilledFieldsMessage") as string;
+            string title = FindResource("UnfilledFieldsMsgBoxTitle") as string;
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
         private void combinationField_KeyUp(object sender, KeyEventArgs e)
         {
             tempBind.Modifiers = Keyboard.Modifiers | tempBind.Modifiers;
-            ResultHotkey.SwitchBind(tempBind);
-            combinationField.Text = ResultHotkey.HotkeyText;
+            ResultHotkey.SetBind(tempBind);
+            combinationField.Text = ResultHotkey.ToString();
         }
 
     }

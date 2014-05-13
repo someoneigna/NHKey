@@ -9,31 +9,33 @@ using NHkey.Model;
 
 namespace NHkey.Data
 {
-    public class JSONHotkeyContext : IContext<Hotkey>
+    public class JSONHotkeyContext : IContext<HotkeyAssociation>
     {
         // Hotkey.GetHashCode -> Hotkey
-        private List<Hotkey> data;
+        private List<HotkeyAssociation> data;
 
-        public IQueryable<Hotkey> Collection { get { return data.AsQueryable(); } }
+        public IQueryable<HotkeyAssociation> Collection { get { return data.AsQueryable(); } }
         private readonly string SaveFilePath;
+        bool loaded;
 
         public JSONHotkeyContext(string path)
         {
             SaveFilePath = path;
-            data = new List<Hotkey>();
+            data = new List<HotkeyAssociation>();
         }
 
         public void Save()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(HotkeyData[]) );
+            HotkeyData[] hotkeyData = data.ConvertAll<HotkeyData>((hk) => HotkeyData.GetData(hk)).ToArray();
 
             try
             {
                 saveFile = File.Create(SaveFilePath);
                 if (saveFile.CanWrite)
                 {
-                    serializer.WriteObject(saveFile, data.ToArray());
+                    serializer.WriteObject(saveFile, hotkeyData);
                 }
             }
             catch (IOException except)
@@ -50,27 +52,22 @@ namespace NHkey.Data
         public void Load()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(Hotkey[]) );
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(HotkeyData[]) );
             
             if (!File.Exists(SaveFilePath)) return;
 
+            loaded = true;
             try
             {
                 saveFile = File.OpenRead(SaveFilePath);
                 if (saveFile.CanRead)
                 {
-                    Hotkey[] hotkeys = null;
+                    HotkeyData[] hotkeys = null;
                     try
                     {
                         saveFile.Position = 0;
-                        hotkeys = (Hotkey[])serializer.ReadObject(saveFile);
-                        for (int i = 0; i < hotkeys.Length; i++)
-                        {
-                            if (hotkeys[i] != null && hotkeys[i].FilePath != null)
-                            {
-                                data.Add(hotkeys[i]); // AddSavedHotkey(hotkeys[i]);
-                            }
-                        }
+                        hotkeys = (HotkeyData[])serializer.ReadObject(saveFile);
+                        data = hotkeys.ToList().ConvertAll<HotkeyAssociation>((hotkeyData) => HotkeyData.GetHotkey(hotkeyData));
                     }
                     catch (SerializationException ex)
                     {
@@ -92,7 +89,9 @@ namespace NHkey.Data
             }
         }
 
-        public void Add(Hotkey entity)
+        
+
+        public void Add(HotkeyAssociation entity)
         {
             if (!Collection.Contains(entity))
                 data.Add(entity);
@@ -102,24 +101,26 @@ namespace NHkey.Data
 
         public void Remove(int hashCode)
         {
-            data.Remove(data.Find(x => x.Id == hashCode));
+            data.Remove(data.Find(x => x.Hotkey.Id == hashCode));
         }
 
-        public void Update(Hotkey entity)
+        public void Update(HotkeyAssociation entity)
         {
             data.Remove(entity);
             data.Add(entity);
         }
 
 
-        public void Remove(Hotkey entity)
+        public void Remove(HotkeyAssociation entity)
         {
             data.Remove(entity);
         }
 
 
-        public ICollection<Hotkey> GetAll()
+        public ICollection<HotkeyAssociation> GetAll()
         {
+            if (!loaded)
+                Load();
             return data.ToList();
         }
     }

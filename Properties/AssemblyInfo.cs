@@ -8,9 +8,9 @@ using System.Windows;
 // conjunto de atributos. Cambie estos atributos para modificar la información
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("NHkey")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A hotkey manager for Windows.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("NIGN Software")]
 [assembly: AssemblyProduct("NHkey")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]

@@ -6,15 +6,19 @@ using System.IO;
 using Microsoft.Win32;
 using System.ComponentModel;
 
-namespace NHkey
+namespace NHkey.Model
 {
+    /// <summary>
+    /// Handles app starting options and language.
+    /// </summary>
     public class Options : INotifyPropertyChanged
     {
         public enum Field
         {
-            INIT_HIDDEN = 0,
-            START_WITH_WINDOWS = 1,
-            MAX_OPTIONS = 2
+            B_INIT_HIDDEN,
+            B_START_WITH_WINDOWS,
+            S_LANGUAGE,
+            MAX_OPTIONS
         };
 
         private readonly string saveFile = Directory.GetCurrentDirectory() + "\\" + "config.data";
@@ -22,14 +26,40 @@ namespace NHkey
         private bool loaded;
         private const int FIELD_NAME_POS = 0;
         private const int VALUE_POS = 1;
-        private bool[] value = new bool[(int)Field.MAX_OPTIONS];
+        private object[] value = new object[(int)Field.MAX_OPTIONS];
         private string[] str = new string[(int)Field.MAX_OPTIONS];
-        private Dictionary<string, bool> map = new Dictionary<string, bool>();
+        private Dictionary<string, object> map = new Dictionary<string, object>();
+
+        private static readonly string[] availableLanguages = new string[] { "Spanish", "English" };
+        public static readonly Dictionary<string, string> languageFile = new Dictionary<string, string>()
+        {
+            {"Spanish", "es-AR"},
+            {"English", "en-US"}
+        };
+
+        public string LanguageFile { get { return languageFile[Language]; } }
+
+        public string[] AvailableLanguages
+        {
+            get { return availableLanguages; }
+        }
 
         public Options()
         {
+            // Set default values
             for (int i = 0; i < (int)Field.MAX_OPTIONS; i++)
             {
+                switch(i)
+                {
+                    case 0:
+                    case 1:
+                        value[i] = false;
+                        break;
+                    case 2:
+                        value[i] = "Spanish";
+                        break;
+                }
+
                 str[i] = Enum.GetName(typeof(Field), i);
                 map.Add(str[i], value[i]);
             }
@@ -38,24 +68,45 @@ namespace NHkey
                 Load();
         }
 
-        public Options(Options opt) : this()
+        public Options(Options other) : this()
         {
+            // Copy values from other into this
             for (int i = 0; i < value.Length; i++)
             {
-                value[i] = opt.value[i];
+                value[i] = other.value[i];
             }
         }
 
+
+        public string Language
+        {
+            get
+            {
+                return (string)this.value[(int)Field.S_LANGUAGE];
+            }
+            set
+            {
+                if (availableLanguages.Contains(value))
+                {
+                    this.value[(int)Field.S_LANGUAGE] = value;
+                    //OnPropertyChanged("Language");
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("Language", "That language is unavailable.");
+                }
+            }
+        }
 
         public bool Hidden
         {
             get
             {
-                return this.value[(int)Field.INIT_HIDDEN];
+                return (bool)this.value[(int)Field.B_INIT_HIDDEN];
             }
             set
             {
-                this.value[(int)Field.INIT_HIDDEN] = value;
+                this.value[(int)Field.B_INIT_HIDDEN] = value;
                 OnPropertyChanged("Hidden");
             }
         }
@@ -64,21 +115,24 @@ namespace NHkey
         {
             get
             {
-                return this.value[(int)Field.START_WITH_WINDOWS];
+                return (bool)this.value[(int)Field.B_START_WITH_WINDOWS];
             }
             set
             {
-                this.value[(int)Field.START_WITH_WINDOWS] = value;
+                this.value[(int)Field.B_START_WITH_WINDOWS] = value;
                 OnPropertyChanged("WindowsStartup");
             }
         }
 
-        public void Set(Field opt, bool value)
+        public void Set(Field opt, object value)
         {
             int index = (int)opt;
             this.value[index] = value;
         }
 
+        /// <summary>
+        /// Add the application into registry to run at Windows startup.
+        /// </summary>
         private void RegisterAppInit()
         {
             RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -102,7 +156,7 @@ namespace NHkey
                 string data = null;
                 for (int i = 0; i < (int)Field.MAX_OPTIONS; i++)
                 {
-                    data += str[i] + "=" + value[i] + "\n";
+                    data += str[i].Remove(0, 2) + "=" + value[i] + "\n";
                 }
 
                 File.WriteAllText(saveFile, data);
@@ -110,7 +164,7 @@ namespace NHkey
             }
             catch (IOException ex)
             {
-
+                throw ex;
             }
             finally
             {
@@ -125,7 +179,7 @@ namespace NHkey
 
         public void Load()
         {
-
+            if (!File.Exists(saveFile)) return;
             try
             {
                 string[] data = File.ReadAllLines(saveFile);
@@ -136,15 +190,20 @@ namespace NHkey
                     for (int i = 0; i < (int)Field.MAX_OPTIONS && i < data.Length; i++)
                     {
                         var = data[i].Split('=');
-                        if (var[FIELD_NAME_POS] == str[i])
+                        if (var[FIELD_NAME_POS] == str[i].Remove(0, 2))
                         {
-                            value[i] = bool.Parse(var[VALUE_POS]);
+                            if (str[i].Contains("B_"))
+                                value[i] = bool.Parse(var[VALUE_POS]);
+                            else
+                                value[i] = var[VALUE_POS];
                         }
                     }
+                    Language = value[(int)Field.S_LANGUAGE] as string;
                 }
             }
             catch (IOException ex)
             {
+                throw ex;
             }
             finally { }
         }
@@ -154,18 +213,17 @@ namespace NHkey
             return this.str;
         }
 
-        public bool[] GetValues()
+        public object[] GetValues()
         {
             return this.value;
         }
 
-        public bool GetValue(string type)
+        public object GetValue(string value)
         {
-            return map[type];
+            return map[value];
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
         public void OnPropertyChanged(string property = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;

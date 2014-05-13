@@ -6,7 +6,7 @@ NHKey
 A Windows hotkey manager made with C# and WPF (.net 4.0). Overrides the window main procedure (WndProc) and uses WinAPI functions through P/Invoke (RegisterHotkey and UnregisterHotkey) to register the hotkeys globally.
 
 ## Installation
-Just copy the binary in an accesible folder and is ready to be used.
+Just copy the Binary folder in an accesible folder and is ready to be used.
 I will provide a installer in the future (I plan to also write one >_<).
 
 ----------------------------------------------
@@ -30,4 +30,5 @@ I will provide a installer in the future (I plan to also write one >_<).
 ======
 
 
-Will soon add the option to change languages.
+Currently available Spanish and English.
+Feel free to pull request with language resource files for your language of choice. :)

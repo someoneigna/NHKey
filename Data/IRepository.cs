@@ -7,12 +7,12 @@ namespace NHkey.Data
 {
     public interface IRepository<T>
     {
-
         void Add(T element);
         void Remove(T element);
+        void Update(T element);
         void Load();
         void Save();
 
-        ICollection<T> GetAll();
+        List<T> GetAll();
     }
 }

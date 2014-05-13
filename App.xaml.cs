@@ -8,18 +8,35 @@ using System.Windows;
 
 namespace NHkey
 {
-    /// <summary>
-    /// Lógica de interacción para App.xaml
-    /// </summary>
     public partial class App : Application
     {
         static string LogFile = "errorLog.log";
+        public static App Instance { get; protected set; }
+
+        public void SwitchLanguage(string language)
+        {
+            ResourceDictionary theme = Resources.MergedDictionaries.Where((rd) => rd.Source.ToString().Contains("Theme.xaml")).Single();
+            Resources.MergedDictionaries.Clear();
+
+            Resources.MergedDictionaries.Add(theme);
+
+            var newDict = new ResourceDictionary();
+            newDict.Source = new Uri("Resources/" + "Lang." + language + ".xaml", UriKind.Relative);
+
+            Resources.MergedDictionaries.Add(newDict);
+            
+            foreach(Window window in this.Windows)
+            {
+                window.InvalidateVisual();
+            }
+        }
 
         public App()
         {
-
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             Application.Current.DispatcherUnhandledException += DispatcherUnhandledExceptionHandler;
+
+            Instance = this;
         }
 
         private void DispatcherUnhandledExceptionHandler(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

@@ -11,31 +11,30 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using NHkey.Model;
 
-namespace NHkey
+namespace NHkey.View
 {
     /// <summary>
-    /// Lógica de interacción para Opciones.xaml
+    /// Handles the program options.
     /// </summary>
-    ///
-    public partial class Opciones : Window
+    public partial class OptionDialog : Window
     {
-        Options option = new Options();
-
         public Options OptionViewModel { get; protected set; }
 
-        public Opciones(Options initialOptions)
+        public OptionDialog(Options initialOptions)
         {
             InitializeComponent();
             OptionViewModel = initialOptions;
             DataContext = OptionViewModel;
         }
 
-        public Options GetOptions()
+        public OptionDialog()
+            : this(new Options())
         {
-            return option;
         }
 
+        #region Save and Cancel  // Removed for now
         private void guardarButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
@@ -48,6 +47,17 @@ namespace NHkey
             DialogResult = false;
             OptionViewModel = null;
             Close();
+        }
+        #endregion
+
+        private void languageChosen_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ResourceDictionary dictionary = new ResourceDictionary();
+            var combobox = sender as ComboBox;
+
+            string language = OptionViewModel.LanguageFile;
+
+            App.Instance.SwitchLanguage(language);
         }
     }
 }

@@ -148,5 +148,20 @@ namespace NHkey.NHotkeyAPI
             return ( Key == bind.Item1 &&
                      Modifier == bind.Item2 );
         }
+
+        public void SetHandle(IntPtr WindowHandle)
+        {
+            if (Registered)
+            {
+                Unregister();
+                Handle = WindowHandle;
+                Register();
+            }
+            else
+            {
+                Handle = WindowHandle;
+            }
+            
+        }
     }
 }

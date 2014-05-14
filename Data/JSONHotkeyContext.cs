@@ -93,10 +93,21 @@ namespace NHkey.Data
 
         public void Add(HotkeyAssociation entity)
         {
-            if (!Collection.Contains(entity))
+            if (!data.Contains(entity))
                 data.Add(entity);
             else
                 Update(entity);
+        }
+
+        public void Add(List<HotkeyAssociation> entities)
+        {
+            foreach(var hk in entities)
+            {
+                if (!data.Contains(hk))
+                    Add(hk);
+                else
+                    Update(hk);
+            }
         }
 
         public void Remove(int hashCode)

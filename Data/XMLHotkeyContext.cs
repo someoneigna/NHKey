@@ -60,6 +60,17 @@ namespace NHkey.Data
                 Update(entity);
         }
 
+        public void Add(List<HotkeyAssociation> entities)
+        {
+            foreach (var hk in entities)
+            {
+                if (!data.Contains(hk))
+                    Add(hk);
+                else
+                    Update(hk);
+            }
+        }
+
         public void Remove(int hashCode)
         {
             data.Remove(data.Find(x => x.Hotkey.Id == hashCode));

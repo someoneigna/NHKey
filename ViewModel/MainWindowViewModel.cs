@@ -16,7 +16,8 @@ namespace NHkey.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public Dictionary<int, HotkeyAssociation> Hotkeys { get; protected set; }
+        private Dictionary<int, HotkeyAssociation> hotkeys;
+        public Dictionary<int, HotkeyAssociation> Hotkeys { get { return hotkeys; } protected set { hotkeys = value; OnPropertyChanged("Hotkeys"); } }
         
         public static IntPtr WindowHandle;
 
@@ -24,6 +25,7 @@ namespace NHkey.ViewModel
 
         private static string SaveFilePath = Directory.GetCurrentDirectory() + "\\" + "hotkeys.data";
 
+        public Options CurrentOptions { get; set; }
         public Action Close { get; protected set; }
 
         public MainWindowViewModel()
@@ -31,8 +33,16 @@ namespace NHkey.ViewModel
             repository = new HotkeyRepository(new JSONHotkeyContext(SaveFilePath));
             Hotkeys = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
 
+            CurrentOptions = new Options();
+
             // Actions
-            Close += new Action(() => saveHotkeys());
+            Close += new Action(() => SaveAndExit());
+        }
+
+        private void SaveAndExit()
+        {
+            saveHotkeys();
+            CurrentOptions.Save();
         }
 
         public void DisableHotkeys()
@@ -157,6 +167,36 @@ namespace NHkey.ViewModel
             System.Diagnostics.Process.Start(hotkey.FilePath, hotkey.Parameters);
         }
 
+
+        internal void ExportHotkeys(string path)
+        {
+            using (var newRepository = new HotkeyRepository(new JSONHotkeyContext(path)))
+            {
+                newRepository.CopyFrom(repository);
+                newRepository.Save();
+            }
+        }
+
+        internal void ImportHotkeys(string path)
+        {
+            using (var newRepository = new HotkeyRepository(new JSONHotkeyContext(path)))
+            {
+                var hotkeys = newRepository.GetAll();
+                SetHotkeyHandles(hotkeys, WindowHandle);
+
+                repository.ImportFrom(hotkeys);
+            }
+            Hotkeys = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
+            EnableHotkeys();
+        }
+
+        private void SetHotkeyHandles(List<HotkeyAssociation> hotkeys, IntPtr WindowHandle)
+        {
+            foreach(var hk in hotkeys)
+            {
+                hk.Hotkey.SetHandle(WindowHandle);
+            }
+        }
     }
 
 }

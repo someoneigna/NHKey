@@ -19,5 +19,7 @@ namespace NHkey.Data
         void Save();
 
         IQueryable<T> Collection { get; }
+
+        void Add(List<T> list);
     }
 }

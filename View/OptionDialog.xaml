@@ -34,7 +34,7 @@
         </Grid.ColumnDefinitions>
         
         <CheckBox IsChecked="{Binding Path=Hidden}" Content="{DynamicResource InitHidden}"  Name="initHiddenV"  IsEnabled="True"  Grid.Row="1"  Grid.Column="1" FontSize="14"/>
-        <CheckBox IsChecked="{Binding Path=WindowsStartUp}"  Content="{DynamicResource InitWithWindows}" Name="windowsStartUpV"  Grid.Row="2"  Grid.Column="1" FontSize="14"/>
+        <CheckBox IsChecked="{Binding Path=WindowsStartup}"  Content="{DynamicResource InitWithWindows}" Name="windowsStartUpV"  Grid.Row="2"  Grid.Column="1" FontSize="14"/>
         <Label Content="{DynamicResource LanguageLabel}" Grid.Row="3" Grid.Column="1" FontSize="14" />
         <ComboBox SelectedItem="{Binding Path=Language}" ItemsSource="{Binding Path=AvailableLanguages}" Name="languageChosen" Grid.Row="4" Grid.Column="1" SelectionChanged="languageChosen_SelectionChanged"/>
 

@@ -52,7 +52,6 @@ namespace NHkey.View
 
         private void languageChosen_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ResourceDictionary dictionary = new ResourceDictionary();
             var combobox = sender as ComboBox;
 
             string language = OptionViewModel.LanguageFile;

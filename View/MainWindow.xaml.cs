@@ -25,19 +25,23 @@ using System.Windows.Shell;
 using NHkey.Model;
 using NHkey.ViewModel;
 using GalaSoft.MvvmLight.Command;
+using NHkey.Data;
 
 namespace NHkey.View
 {
     public partial class MainWindow : Window
     {
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
-        public static MainWindowViewModel ViewModel;
 
         public static RelayCommand EditHotkey { get; protected set; }
         public static RelayCommand DeleteHotkey { get; protected set; }
         public static RelayCommand AddHotkey { get; protected set; }
 
-        private Options currentOptions;
+        // Menu commands
+        public static RelayCommand ExportHotkey { get; protected set; }
+        public static RelayCommand ImportHotkey { get; protected set; }
+
+        public static MainWindowViewModel ViewModel { get; protected set; }
 
         public MainWindow()
         {
@@ -57,7 +61,7 @@ namespace NHkey.View
             InitializeComponent();
 
             ViewModel = new MainWindowViewModel();
-            DataContext = ViewModel;
+            DataContext = this;
 
             EditHotkey = new RelayCommand(() => EditSelectedItem(), () => hotkeyList.SelectedItem != null);
             editButton.Command = EditHotkey;
@@ -68,8 +72,50 @@ namespace NHkey.View
             AddHotkey = new RelayCommand(() => AddItem());
             addButton.Command = AddHotkey;
 
-            currentOptions = new Options();
-            App.Instance.SwitchLanguage(currentOptions.LanguageFile);
+            ImportHotkey = new RelayCommand(() => ImportHotkeyDialog());
+
+            ExportHotkey = new RelayCommand(() => ExportHotkeyDialog());
+
+            SwitchLanguage(ViewModel.CurrentOptions.LanguageFile);
+
+        }
+
+        /// <summary>
+        /// Changes the current language merged dictionaries for the chosen language.
+        /// </summary>
+        /// <param name="language">The ending indicating language of the resource dictionaries.</param>
+        private void SwitchLanguage(string language)
+        {
+            App.Instance.SwitchLanguage(language);
+        }
+
+        private void ExportHotkeyDialog()
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Title = FindResource("ExportHotkeyTitle") as string;
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.ShowDialog();
+
+            if (!string.IsNullOrEmpty(dialog.FileName))
+            {
+                ViewModel.ExportHotkeys(dialog.FileName);
+            }
+        }
+
+        private void ImportHotkeyDialog()
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.CheckFileExists = true;
+            dialog.Title = FindResource("ImportHotkeyTitle") as string;
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.ShowDialog();
+
+            if (!string.IsNullOrEmpty(dialog.FileName))
+            {
+                ViewModel.ImportHotkeys(dialog.FileName);
+                hotkeyList.Items.Refresh();
+                hotkeyList.InvalidateVisual();
+            }
         }
 
         #region Command actions
@@ -205,13 +251,13 @@ namespace NHkey.View
         /// </summary>
         private void options_Click(object sender, EventArgs args)
         {
-            OptionDialog dialog = new OptionDialog(currentOptions);
+            OptionDialog dialog = new OptionDialog(ViewModel.CurrentOptions);
             dialog.Owner = this;
             dialog.ShowDialog();
 
             if (dialog.DialogResult.Equals(true))
             {
-                currentOptions = dialog.OptionViewModel;
+                ViewModel.CurrentOptions = dialog.OptionViewModel;
             }
 
             dialog.Close();
@@ -299,7 +345,15 @@ namespace NHkey.View
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ViewModel.Close();
-            currentOptions.Save();
         }
+
+        /// <summary>
+        /// Handles language change from upper menu.
+        /// </summary>
+        private void languageChosen_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SwitchLanguage(ViewModel.CurrentOptions.LanguageFile);
+        }
+
     }
 }

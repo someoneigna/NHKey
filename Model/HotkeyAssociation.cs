@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 namespace NHkey.Model
 {
     [DataContract]
-    public class HotkeyAssociation : INotifyPropertyChanged
+    public class HotkeyAssociation : INotifyPropertyChanged, IEquatable<HotkeyAssociation>
     {
         private NHotkeyAPI.Hotkey hotkey;
 
@@ -29,7 +29,8 @@ namespace NHkey.Model
         public string Name 
         { 
             get { return name; }
-            set { 
+            set
+            {
                 name = value;
                 OnPropertyChanged("Name"); 
             } 
@@ -39,7 +40,8 @@ namespace NHkey.Model
         public string FilePath
         {
             get { return path; }
-            set { 
+            set
+            {
                 path = value;
                 OnPropertyChanged("FilePath");
             }
@@ -49,7 +51,8 @@ namespace NHkey.Model
         public string Parameters
         {
             get { return parameters; }
-            set { 
+            set
+            {
                 parameters = value;
                 OnPropertyChanged("Parameters");
             }
@@ -58,15 +61,16 @@ namespace NHkey.Model
         private BitmapSource icon;
         public BitmapSource Icon
         {
-            get 
-            { 
+            get
+            {
                 if (icon == null && !string.IsNullOrEmpty(FilePath))
                 {
                     Icon = Helpers.BitmapHelper.GetIcon(FilePath);
                 }
                 return icon; 
             }
-            set {
+            set
+            {
                 icon = value;
                 OnPropertyChanged("Icon");
             }
@@ -96,17 +100,19 @@ namespace NHkey.Model
             Hotkey = new Hotkey();
         }
 
-        
-
         internal void SetBind(KeyBinding tempBind)
         {
             int vkey = KeyInterop.VirtualKeyFromKey(tempBind.Key);
             int vmod = (int)tempBind.Modifiers;
 
             if (Hotkey != null)
+            {
                 Hotkey.SwitchBind(vkey, vmod);
+            }
             else
+            {
                 Hotkey = new Hotkey(vkey, vmod);
+            }
         }
 
         public override string ToString()
@@ -135,16 +141,32 @@ namespace NHkey.Model
             return Hotkey.GetHashCode();
         }
 
+        public void Enable()
+        {
+            if (!Hotkey.Registered)
+            {
+                Hotkey.Register();
+            }
+        }
+
+        public void Disable()
+        {
+            if (Hotkey.Registered)
+            {
+                Hotkey.Unregister();
+            }
+        }
+
         /// <summary>
         /// Swap the values for HotkeyAssociation skipping the Hotkey.
         /// </summary>
-        /// <param name="dialogResultHotkey">Another <see cref="HotkeAssociation"/>.</param>
-        internal void Swap(HotkeyAssociation dialogResultHotkey)
+        /// <param name="other">Another <see cref="HotkeAssociation"/>.</param>
+        internal void Swap(HotkeyAssociation other)
         {
-            Name = dialogResultHotkey.Name;
-            FilePath = dialogResultHotkey.FilePath;
-            Parameters = dialogResultHotkey.Parameters;
-            Icon = dialogResultHotkey.Icon;
+            Name = other.Name;
+            FilePath = other.FilePath;
+            Parameters = other.Parameters;
+            Icon = other.Icon;
         }
 
         public void OnPropertyChanged(string property)
@@ -153,6 +175,13 @@ namespace NHkey.Model
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
+        }
+
+        public bool Equals(HotkeyAssociation other)
+        {
+            return ( FilePath == other.FilePath &&
+                     Name == other.Name &&
+                     Parameters == other.Parameters );
         }
     }
 }

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Hotkey.cs" />
     <Compile Include="HotkeyFactory.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

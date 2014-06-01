@@ -1,9 +1,11 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using NHkey.Data;
+using NHkey.Helpers;
 using NHkey.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,11 +16,12 @@ using System.Windows.Media.Imaging;
 
 namespace NHkey.ViewModel
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase , INotifyCollectionChanged
     {
         private Dictionary<int, HotkeyAssociation> hotkeys;
+
         public Dictionary<int, HotkeyAssociation> Hotkeys { get { return hotkeys; } protected set { hotkeys = value; OnPropertyChanged("Hotkeys"); } }
-        
+
         public static IntPtr WindowHandle;
 
         private HotkeyRepository repository;
@@ -31,12 +34,22 @@ namespace NHkey.ViewModel
         public MainWindowViewModel()
         {
             repository = new HotkeyRepository(new JSONHotkeyContext(SaveFilePath));
-            Hotkeys = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
+
+            Hotkeys = LoadFromRepository();
 
             CurrentOptions = new Options();
 
             // Actions
             Close += new Action(() => SaveAndExit());
+        }
+
+        private Dictionary<int, HotkeyAssociation> LoadFromRepository()
+        {
+            var hotkeyDict = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, hotkeyDict.ToList()));
+
+            return hotkeyDict;
         }
 
         private void SaveAndExit()
@@ -49,7 +62,7 @@ namespace NHkey.ViewModel
         {
             foreach(var hotkey in Hotkeys.Values.ToList())
             {
-                hotkey.Hotkey.Unregister();
+                hotkey.Disable();
             }
         }
 
@@ -57,7 +70,11 @@ namespace NHkey.ViewModel
         {
             foreach (var hotkey in Hotkeys.Values.ToList())
             {
-                hotkey.Hotkey.Register();
+                if (hotkey.Hotkey.Handle == IntPtr.Zero)
+                {
+                    hotkey.Hotkey.SetHandle(WindowHandle);
+                }
+                hotkey.Enable();
             }
         }
 
@@ -72,18 +89,14 @@ namespace NHkey.ViewModel
             WindowHandle = handle;
             List<HotkeyAssociation> old = Hotkeys.Values.ToList();
 
-            // Register hotkeys with new window handle and re arrange the dictionary.
+            // Register hotkeys with new window handle.
             for(int i=0; i < Hotkeys.Count; i++)
             {
                 var hotkey = old[i];
-                
-                // Remove from dictionary the reference to hotkey with old window handle
-                Hotkeys.Remove(hotkey.GetHashCode());
 
-                hotkey.Hotkey.Reload(handle); // This will change the hashCode
-
-                // Re add after updating handle for hotkey
-                Hotkeys.Add(hotkey.GetHashCode(), hotkey);
+                hotkey.Disable();
+                hotkey.Hotkey.SetHandle(handle);
+                hotkey.Enable();
             }
         }
 
@@ -139,9 +152,10 @@ namespace NHkey.ViewModel
 
         public void RemoveHotkey(HotkeyAssociation oldHotkey)
         {
-            Hotkeys[oldHotkey.GetHashCode()].Hotkey.Unregister();
+            oldHotkey.Disable();
             Hotkeys.Remove(oldHotkey.GetHashCode());
             repository.Remove(oldHotkey);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldHotkey));
         }
 
         public void UpdateHotkey(HotkeyAssociation oldHotkey, HotkeyAssociation newHotkey)
@@ -149,6 +163,7 @@ namespace NHkey.ViewModel
             // Swap the oldHotkey data with the new one, maintaining the key.
             Hotkeys[oldHotkey.GetHashCode()].Swap(newHotkey);
             repository.Update(oldHotkey);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newHotkey, oldHotkey));
         }
 
         public void AddHotkey(HotkeyAssociation hotkey)
@@ -156,6 +171,7 @@ namespace NHkey.ViewModel
             hotkey.Hotkey.Reload(WindowHandle);
             Hotkeys.Add(hotkey.GetHashCode(), hotkey);
             repository.Add(hotkey);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, hotkey));
         }
 
         /// <summary>
@@ -168,6 +184,10 @@ namespace NHkey.ViewModel
         }
 
 
+        /// <summary>
+        /// Save the hotkeys to a json/xml backup file.
+        /// </summary>
+        /// <param name="path">Destiny of the backup xml/json hotkey data file.</param>
         internal void ExportHotkeys(string path)
         {
             using (var newRepository = new HotkeyRepository(new JSONHotkeyContext(path)))
@@ -177,25 +197,49 @@ namespace NHkey.ViewModel
             }
         }
 
+        /// <summary>
+        /// Import a json/xml hotkey backup file.
+        /// </summary>
+        /// <param name="path">Path to the json/xml formated hotkey data file.</param>
         internal void ImportHotkeys(string path)
         {
             using (var newRepository = new HotkeyRepository(new JSONHotkeyContext(path)))
             {
                 var hotkeys = newRepository.GetAll();
-                SetHotkeyHandles(hotkeys, WindowHandle);
+                DisableHotkeys();
 
                 repository.ImportFrom(hotkeys);
             }
-            Hotkeys = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
+            Hotkeys = LoadFromRepository();
             EnableHotkeys();
         }
 
+        /// <summary>
+        /// Change the associated window handle for each hotkey.
+        /// </summary>
+        /// <param name="hotkeys">A List of <see cref="HotkeyAssociation"/>.</param>
+        /// <param name="WindowHandle">The current window handle.</param>
         private void SetHotkeyHandles(List<HotkeyAssociation> hotkeys, IntPtr WindowHandle)
         {
             foreach(var hk in hotkeys)
             {
                 hk.Hotkey.SetHandle(WindowHandle);
             }
+        }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            if (CollectionChanged != null)
+            {
+                CollectionChanged(this, e);
+            }
+        }
+
+
+        internal void Load()
+        {
+            LoadFromRepository();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NHotkeyAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,16 @@ namespace NHkey.NHotkeyAPI
         {
             Hotkey newHotkey = new Hotkey(hotkey.Key, hotkey.Modifier, handle);
             return newHotkey;
+        }
+
+        public static bool RegisterHotkey(Hotkey hotkey)
+        {
+            return NativeMethods.RegisterHotKey(hotkey.Handle, hotkey.Id, hotkey.Modifier, hotkey.Key);
+        }
+
+        public static bool UnregisterHotkey(Hotkey hotkey)
+        {
+            return NativeMethods.UnregisterHotKey(hotkey.Handle, hotkey.Id);
         }
     }
 }

@@ -12,13 +12,13 @@ namespace NHkey.Data
     {
         [DataMember]
         public string Name { get; set; }
-        
+
         [DataMember]
         public string FilePath { get; set; }
-        
+
         [DataMember]
         public string Parameters { get; set; }
-        
+
         [DataMember]
         public int Key { get; set; }
 

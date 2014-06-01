@@ -9,13 +9,14 @@ using NHkey.Model;
 
 namespace NHkey.Data
 {
-    public class JSONHotkeyContext : IContext<HotkeyAssociation>
+    public sealed class JSONHotkeyContext : IContext<HotkeyAssociation>
     {
-        // Hotkey.GetHashCode -> Hotkey
         private List<HotkeyAssociation> data;
 
         public IQueryable<HotkeyAssociation> Collection { get { return data.AsQueryable(); } }
+
         private readonly string SaveFilePath;
+
         bool loaded;
 
         public JSONHotkeyContext(string path)
@@ -27,7 +28,7 @@ namespace NHkey.Data
         public void Save()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(HotkeyData[]) );
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(HotkeyData[]));
             HotkeyData[] hotkeyData = data.ConvertAll<HotkeyData>((hk) => HotkeyData.GetData(hk)).ToArray();
 
             try
@@ -52,20 +53,21 @@ namespace NHkey.Data
         public void Load()
         {
             FileStream saveFile = null;
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer( typeof(HotkeyData[]) );
-            
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(HotkeyData[]));
+
             if (!File.Exists(SaveFilePath)) return;
 
             loaded = true;
             try
             {
                 saveFile = File.OpenRead(SaveFilePath);
+
                 if (saveFile.CanRead)
                 {
                     HotkeyData[] hotkeys = null;
                     try
                     {
-                        saveFile.Position = 0;
                         hotkeys = (HotkeyData[])serializer.ReadObject(saveFile);
                         data = hotkeys.ToList().ConvertAll<HotkeyAssociation>((hotkeyData) => HotkeyData.GetHotkey(hotkeyData));
                     }
@@ -89,8 +91,6 @@ namespace NHkey.Data
             }
         }
 
-        
-
         public void Add(HotkeyAssociation entity)
         {
             if (!data.Contains(entity))
@@ -101,7 +101,7 @@ namespace NHkey.Data
 
         public void Add(List<HotkeyAssociation> entities)
         {
-            foreach(var hk in entities)
+            foreach (var hk in entities)
             {
                 if (!data.Contains(hk))
                     Add(hk);
@@ -121,17 +121,17 @@ namespace NHkey.Data
             data.Add(entity);
         }
 
-
         public void Remove(HotkeyAssociation entity)
         {
             data.Remove(entity);
         }
 
-
         public ICollection<HotkeyAssociation> GetAll()
         {
             if (!loaded)
+            {
                 Load();
+            }
             return data.ToList();
         }
     }

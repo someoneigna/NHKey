@@ -76,14 +76,15 @@
         </Grid.RowDefinitions>
 
         <Menu  Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" IsMainMenu="True" >
+
             <MenuItem Header="Hotkeys">
                 <MenuItem Header="{DynamicResource MenuImportHotkeys}" Command="{Binding ImportHotkey}"/>
                 <MenuItem Header="{DynamicResource MenuExportHotkeys}" Command="{Binding ExportHotkey}"/>
             </MenuItem>
-            
+
             <MenuItem DataContext="{Binding ViewModel}" Header="{DynamicResource MenuOptionsHeader}">
                 <MenuItem Header="{DynamicResource MenuInitHidden}" IsCheckable="True" IsChecked="{Binding Path=CurrentOptions.Hidden}"/>
-                <MenuItem Header="{DynamicResource MenuWindowsStart}" IsCheckable="True" IsChecked="{Binding Path=CurrentOptions.WindowsStart}"/>
+                <MenuItem Header="{DynamicResource MenuWindowsStartup}" IsCheckable="True" IsChecked="{Binding Path=CurrentOptions.WindowsStartup}"/>
                 <ComboBox SelectedItem="{Binding CurrentOptions.Language}" ItemsSource="{Binding CurrentOptions.AvailableLanguages}" Name="languageChosen" SelectionChanged="languageChosen_SelectionChanged"/>
             </MenuItem>
         </Menu>
@@ -108,7 +109,7 @@
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            ItemTemplate="{StaticResource listTemplate}"  UseLayoutRounding="True">
+            ItemTemplate="{StaticResource listTemplate}"  UseLayoutRounding="True" IsManipulationEnabled="True">
             <!--<ListBox.ItemContainerStyle>
             <Style TargetType="ListBoxItem">
                 <Setter Property="HorizontalContentAlignment"

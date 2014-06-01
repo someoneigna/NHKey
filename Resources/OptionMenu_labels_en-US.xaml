@@ -12,5 +12,5 @@
     <!-- Buttons -->
     <system:String x:Key="SaveButton">Ok</system:String>
     <system:String x:Key="CancelButton">Cancel</system:String>
-    
+
 </ResourceDictionary>

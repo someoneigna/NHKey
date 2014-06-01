@@ -64,8 +64,7 @@ namespace NHkey.Model
                 map.Add(str[i], value[i]);
             }
 
-            if (!loaded)
-                Load();
+            if (!loaded) { Load(); };
         }
 
         public Options(Options other) : this()
@@ -183,19 +182,23 @@ namespace NHkey.Model
             try
             {
                 string[] data = File.ReadAllLines(saveFile);
-                string[] var = null;
+                string[] vars = null;
 
                 if (data != null)
                 {
                     for (int i = 0; i < (int)Field.MAX_OPTIONS && i < data.Length; i++)
                     {
-                        var = data[i].Split('=');
-                        if (var[FIELD_NAME_POS] == str[i].Remove(0, 2))
+                        vars = data[i].Split('=');
+                        if (vars[FIELD_NAME_POS] == str[i].Remove(0, 2))
                         {
                             if (str[i].Contains("B_"))
-                                value[i] = bool.Parse(var[VALUE_POS]);
+                            {
+                                value[i] = bool.Parse(vars[VALUE_POS]);
+                            }
                             else
-                                value[i] = var[VALUE_POS];
+                            {
+                                value[i] = vars[VALUE_POS];
+                            }
                         }
                     }
                     Language = value[(int)Field.S_LANGUAGE] as string;
@@ -206,6 +209,7 @@ namespace NHkey.Model
                 throw ex;
             }
             finally { }
+            loaded = true;
         }
 
         public string[] GetNames()
@@ -227,8 +231,7 @@ namespace NHkey.Model
         public void OnPropertyChanged(string property = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-                handler(this, new PropertyChangedEventArgs(property));
+            if (handler != null) { handler(this, new PropertyChangedEventArgs(property)); }
         }
     }
 }

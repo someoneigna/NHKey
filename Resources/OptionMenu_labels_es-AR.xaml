@@ -8,9 +8,9 @@
     <system:String x:Key="InitHidden">Iniciar invisible</system:String>
     <system:String x:Key="InitWithWindows">Iniciar con Windows</system:String>
     <system:String x:Key="LanguageLabel">Lenguaje</system:String>
-    
+
     <!-- Buttons -->
     <system:String x:Key="SaveButton">Guardar</system:String>
     <system:String x:Key="CancelButton">Cancelar</system:String>
-    
+
 </ResourceDictionary>

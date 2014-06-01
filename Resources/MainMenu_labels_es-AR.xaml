@@ -8,12 +8,12 @@
     <!-- Option menu -->
     <system:String x:Key="MenuOptionsHeader">Opciones</system:String>
     <system:String x:Key="MenuInitHidden">Iniciar minimizado</system:String>
-    <system:String x:Key="MenuWindowsStart">Iniciar con Windows</system:String>
-    
+    <system:String x:Key="MenuWindowsStartup">Iniciar con Windows</system:String>
+
     <!-- Buttons -->
     <system:String x:Key="AddButton">Agregar</system:String>
     <system:String x:Key="DeleteButton">Eliminar</system:String>
     <system:String x:Key="EditButton">Editar</system:String>
     <system:String x:Key="OptionButton">Opciones</system:String>
-    
+
 </ResourceDictionary>

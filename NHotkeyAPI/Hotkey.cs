@@ -4,21 +4,28 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using NHotkeyAPI;
 
 namespace NHkey.NHotkeyAPI
 {
-    public class Hotkey : IDisposable, IEquatable<Hotkey>, IEquatable<Tuple<int,int>>
+    public class Hotkey : IDisposable, IEquatable<Hotkey>, IEquatable<Tuple<int, int>>
     {
         #region Properties
 
         public bool Invalid { get { return (Key == 0 && Modifier == 0); } }
 
+        /// <summary>
+        /// Virtual Key code
+        /// </summary>
         public int Key { get; protected set; }
 
         public int Modifier { get; protected set; }
 
         public bool Registered { get; protected set; }
 
+        /// <summary>
+        /// Returns the text representation of the hotkey values.
+        /// </summary>
         public string HotkeyText
         {
             get { return this.ToString(); }
@@ -29,6 +36,9 @@ namespace NHkey.NHotkeyAPI
         /// </summary>
         public IntPtr Handle { get; protected set; }
 
+        /// <summary>
+        /// Returns the hashcode used to distinguish and activate the hotkeys.
+        /// </summary>
         public int Id { get { return GetHashCode(); } }
 
         #endregion
@@ -39,7 +49,8 @@ namespace NHkey.NHotkeyAPI
         {
         }
 
-        public Hotkey(Tuple<int, int> bind, IntPtr wHandle) : this(bind.Item1, bind.Item2, wHandle)
+        public Hotkey(Tuple<int, int> bind, IntPtr wHandle)
+            : this(bind.Item1, bind.Item2, wHandle)
         {
         }
 
@@ -83,64 +94,61 @@ namespace NHkey.NHotkeyAPI
         /// <returns>True if hotkey registered correctly, false otherwise.</returns>
         public bool Reload(IntPtr newHandle)
         {
-            Unregister();
+            if (Registered) Unregister();
 
             Handle = newHandle;
 
-            Registered = Register();
+            Register();
 
             return Registered;
         }
 
         public bool Register()
         {
-            Registered = RegisterHotKey(Handle, Id, Modifier, Key);
-            if (!Registered)
+            bool success = NativeMethods.RegisterHotKey(Handle, Id, Modifier, Key);
+            if (!success)
             {
-                var error = new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
+            Registered = true;
 
             return Registered;
         }
 
         public bool Unregister()
         {
-            Registered = UnregisterHotKey(Handle, Id);
+            bool success = NativeMethods.UnregisterHotKey(Handle, Id);
+            if (!success)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            Registered = false;
+
             return Registered;
         }
-
 
         public override string ToString()
         {
             return Key + " " + Modifier;
         }
 
-
         public override int GetHashCode()
         {
-            return Modifier ^ Key ^ Handle.ToInt32();
+            return Modifier ^ Key; // If you want to allow the same hotkey in another window: ^ Handle.ToInt32();
         }
 
         #endregion
 
-        #region DllImports
-        [DllImport("user32.dll", SetLastError=true)]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
-
-        [DllImport("user32.dll", SetLastError=true)]
-        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-        #endregion
-
         public void Dispose()
         {
-            Registered = Unregister();
+            Unregister();
             GC.SuppressFinalize(this);
         }
 
         public bool Equals(Hotkey other)
         {
             return ( Key == other.Key &&
-                     Modifier == other.Modifier);
+                     Modifier == other.Modifier );
         }
 
         public bool Equals(Tuple<int, int> bind)
@@ -161,7 +169,7 @@ namespace NHkey.NHotkeyAPI
             {
                 Handle = WindowHandle;
             }
-            
+
         }
     }
 }

@@ -26,6 +26,7 @@ using NHkey.Model;
 using NHkey.ViewModel;
 using GalaSoft.MvvmLight.Command;
 using NHkey.Data;
+using System.ComponentModel;
 
 namespace NHkey.View
 {
@@ -235,13 +236,17 @@ namespace NHkey.View
         /// </summary>
         private void stackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 3)
+            if (e.ClickCount == 2 )
             {
                 if (hotkeyList.SelectedItem != null)
                 {
                     HotkeyAssociation hk = GetSelectedHotkey(hotkeyList);
                     if (hk != null)
+                    {
+                        hotkeyList.SelectedItems.Clear();
                         ViewModel.Execute(hk);
+                    }
+                    e.Handled = true;
                 }
             }
         }

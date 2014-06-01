@@ -90,6 +90,7 @@
     <Compile Include="Data\IContext.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\JSONHotkeyContext.cs" />
+    <Compile Include="Data\Logger.cs" />
     <Compile Include="Data\XMLHotkeyContext.cs" />
     <Compile Include="Helpers\BitmapHelper.cs" />
     <Compile Include="Model\HotkeyAssociation.cs" />

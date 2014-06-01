@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NHkey.Data;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -10,8 +11,9 @@ namespace NHkey
 {
     public partial class App : Application
     {
-        static string LogFile = "errorLog.log";
         public static App Instance { get; protected set; }
+
+        public Logger Log { get; private set; }
 
         public void SwitchLanguage(string language)
         {
@@ -37,8 +39,14 @@ namespace NHkey
             Application.Current.DispatcherUnhandledException += DispatcherUnhandledExceptionHandler;
 
             Instance = this;
+            Instance.Log = new Logger(GetType().Namespace + ".log");
         }
 
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Log.Dispose();
+            base.OnExit(e);
+        }
         private void DispatcherUnhandledExceptionHandler(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             NotifyException(e.Exception);
@@ -48,19 +56,10 @@ namespace NHkey
 
         private static void NotifyException(object exception)
         {
-            StreamWriter logStream = null;
             Exception except = (Exception)exception;
             string errorMessage = DateTime.Now.ToLocalTime() + "\ngot error: " + except.Message + "\nfrom: " + except.Source;
 
-            if (File.Exists(LogFile))
-                logStream = File.AppendText(LogFile);
-            else
-                logStream = File.CreateText(LogFile);
-            
-            
-            logStream.WriteLine(errorMessage.Replace('\n', ' '));
-            logStream.Close();
-
+            Instance.Log.Append("App", errorMessage);
             MessageBox.Show(errorMessage, "Unhandled error ocurred", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 

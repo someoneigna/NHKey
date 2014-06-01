@@ -4,16 +4,16 @@
     <!-- Hotkey menu -->
     <system:String x:Key="MenuImportHotkeys">Import hotkeys</system:String>
     <system:String x:Key="MenuExportHotkeys">Export hotkeys</system:String>
-    
+
     <!-- Option menu -->
     <system:String x:Key="MenuOptionsHeader">Options</system:String>
     <system:String x:Key="MenuInitHidden">Init hidden</system:String>
-    <system:String x:Key="MenuWindowsStart">Start with Windows</system:String>
-    
+    <system:String x:Key="MenuWindowsStartup">Start with Windows</system:String>
+
     <!-- Buttons -->
     <system:String x:Key="AddButton">Add</system:String>
     <system:String x:Key="DeleteButton">Delete</system:String>
     <system:String x:Key="EditButton">Edit</system:String>
     <system:String x:Key="OptionButton">Options</system:String>
-    
+
 </ResourceDictionary>

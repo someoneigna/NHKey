@@ -218,7 +218,7 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="View\Resources\icon.PNG" />
+    <Resource Include="View\Resources\icon.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="NHotkeyAPI\NHotkeyAPI.csproj">

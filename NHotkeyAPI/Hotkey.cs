@@ -12,8 +12,6 @@ namespace NHkey.NHotkeyAPI
     {
         #region Properties
 
-        public bool Invalid { get { return (Key == 0 && Modifier == 0); } }
-
         /// <summary>
         /// Virtual Key code
         /// </summary>
@@ -84,7 +82,6 @@ namespace NHkey.NHotkeyAPI
         {
             Key = key;
             Modifier = mod;
-            Reload(Handle);
         }
 
         /// <summary>
@@ -157,6 +154,11 @@ namespace NHkey.NHotkeyAPI
                      Modifier == bind.Item2 );
         }
 
+        /// <summary>
+        /// Changes the window handle for the hotkey.
+        /// If already registered unregisters and then swaps the handle.
+        /// </summary>
+        /// <param name="WindowHandle">A handle to a window (Form or WPF Window)</param>
         public void SetHandle(IntPtr WindowHandle)
         {
             if (Registered)

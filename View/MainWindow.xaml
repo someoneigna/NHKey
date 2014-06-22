@@ -15,7 +15,7 @@
         VerticalAlignment="Stretch" 
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen" 
-        Icon="Resources\icon.PNG" FontFamily="Verdana"
+        Icon="Resources\icon.png" FontFamily="Verdana"
         >
 
     <Window.Resources>
@@ -26,6 +26,7 @@
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
         </Style>
+
         <!-- <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -47,12 +48,12 @@
                 MouseLeftButtonDown="stackPanel_MouseLeftButtonDown" 
                 Width="{Binding ActualWidth, ElementName=hotkeyList}" Margin="0,0,0,5">
 
-                <Border BorderThickness="2" CornerRadius="2" BorderBrush="{StaticResource ListBorder}">
-                    <Image Name="hotkeyIcon" Source="{Binding Value.Icon}"  Height="44" Width="44" HorizontalAlignment="Center" VerticalAlignment="Top" MaxWidth="64" MaxHeight="64" />
+                <Border BorderThickness="2" CornerRadius="2" BorderBrush="{StaticResource ListBorder}" Width="52" Height="52">
+                    <Image Name="hotkeyIcon" Source="{Binding Value.Icon}"  Height="48" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <TextBlock DockPanel.Dock="Top" Name="hotkeyName" Text="{Binding Value.Name}" FontFamily="Rockwell" FontSize="18" Margin="8,0,0,0" TextTrimming="CharacterEllipsis" />
+                <TextBlock DockPanel.Dock="Top" Name="hotkeyName" Text="{Binding Value.Name}" FontFamily="Rockwell" FontSize="18" Margin="8,0,0,0" TextTrimming="None" TextWrapping="Wrap" />
                 <TextBlock DockPanel.Dock="Top" Name="hotkeyValue" Text="{Binding Value}" FontFamily="Verdana" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" />
-                <TextBlock DockPanel.Dock="Left" Name="hotkeyParameter" Text="{Binding Value.Parameters}" FontFamily="Rockwell" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,2,0,0" />
+                <TextBlock DockPanel.Dock="Left" Name="hotkeyParameter" Text="{Binding Value.Parameters}" FontFamily="Rockwell" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,2,0,0" TextWrapping="Wrap" />
                 <DockPanel.ToolTip >
                     <TextBox  Name="stackPanelTooltip" FontSize="14" Text="{Binding Value.FilePath}" BorderBrush="{StaticResource SelectedBackgroundBrush}" />
                 </DockPanel.ToolTip>
@@ -63,7 +64,7 @@
     <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="12" />
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="330" />
             <ColumnDefinition Width="15" />
             <ColumnDefinition Width="85" />
             <ColumnDefinition Width="12" />
@@ -71,7 +72,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="15"/>
-            <RowDefinition Height="220"/>
+            <RowDefinition Height="240"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
@@ -108,7 +109,7 @@
             SelectionChanged="hotkeyList_SelectionChanged"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
             ItemTemplate="{StaticResource listTemplate}"  UseLayoutRounding="True" IsManipulationEnabled="True">
             <!--<ListBox.ItemContainerStyle>
             <Style TargetType="ListBoxItem">

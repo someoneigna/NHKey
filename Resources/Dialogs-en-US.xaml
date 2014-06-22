@@ -4,4 +4,9 @@
 
     <system:String x:Key="ExportHotkeyTitle">Choose location to export hotkeys</system:String>
     <system:String x:Key="ImportHotkeyTitle">Choose file to import hotkeys</system:String>
+    
+    <!-- Cant Execute dialog -->
+    <system:String x:Key="CantExecuteMsgboxTitle">Cant Execute Hotkey</system:String>
+    <system:String x:Key="CantExecuteMsgboxMessage">The program assigned for the hotkey is invalid or inexistant.</system:String>
+    
 </ResourceDictionary>

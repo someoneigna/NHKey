@@ -19,8 +19,11 @@
     <system:String x:Key="CancelButton">Cancel</system:String>
 
     <!-- Messages -->
-    <system:String x:Key="UnfilledFieldsMessage">You must fill all the fields before continuing.</system:String>
+    <system:String x:Key="UnfilledFieldsMsgBoxMessage">You must fill all the fields before continuing.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Invalid field state</system:String>
+
+    <system:String x:Key="InvalidHotkeyMsgBoxMessage">You also have to press a modifier key (ctrl, shift, etc) and a character.</system:String>
+    <system:String x:Key="InvalidHotkeyMsgBoxTitle">Invalid key combination</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="SearchProgramTitle">Select a program</system:String>

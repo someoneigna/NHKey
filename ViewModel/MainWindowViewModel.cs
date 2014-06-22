@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -117,9 +118,9 @@ namespace NHkey.ViewModel
         /// <returns></returns>
         public bool AddOrUpdateHotkey(HotkeyAssociation newHotkey, HotkeyAssociation oldHotkey)
         {
-            if (newHotkey.Hotkey.Invalid)
+            if (newHotkey.Invalid)
                 throw new ArgumentException("newHotkey", "The Hotkey for the Association has to be valid.");
-            if (oldHotkey != null && oldHotkey.Hotkey.Invalid)
+            if (oldHotkey != null && oldHotkey.Invalid)
                 throw new ArgumentException("oldHotkey", "The Hotkey for the Association has to be valid.");
 
             // If the call was for Edit
@@ -180,9 +181,18 @@ namespace NHkey.ViewModel
         /// <param name="hotkey">A <see cref="HotkeyAssociation"/> got from the call to the hotkey bind.</param>
         internal void Execute(HotkeyAssociation hotkey)
         {
-            System.Diagnostics.Process.Start(hotkey.FilePath, hotkey.Parameters);
+            try
+            {
+                if (hotkey.Enabled)
+                {
+                    System.Diagnostics.Process.Start(hotkey.FilePath, hotkey.Parameters);
+                }
+            }
+            catch(Win32Exception win32ex)
+            {
+                App.Instance.Log.Append("MainWindowModel.Execute", "Failed to execute hotkey: " + win32ex.Message);
+            }
         }
-
 
         /// <summary>
         /// Save the hotkeys to a json/xml backup file.
@@ -235,7 +245,6 @@ namespace NHkey.ViewModel
                 CollectionChanged(this, e);
             }
         }
-
 
         internal void Load()
         {

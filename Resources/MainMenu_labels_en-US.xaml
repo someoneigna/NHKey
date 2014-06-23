@@ -16,4 +16,8 @@
     <system:String x:Key="EditButton">Edit</system:String>
     <system:String x:Key="OptionButton">Options</system:String>
 
+    <!-- Hotkey labels -->
+    <system:String x:Key="OrphanedHotkeyLabel">Orphaned</system:String>
+
+
 </ResourceDictionary>

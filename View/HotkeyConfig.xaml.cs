@@ -48,6 +48,9 @@ namespace NHkey.View
             combinationField.Text = ResultHotkey.ToString();
         }
 
+        /// <summary>
+        /// Spawns a open file dialog to choose a program.
+        /// </summary>
         private void searchProgramButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -60,6 +63,12 @@ namespace NHkey.View
             {
                 ResultHotkey.FilePath = dialog.FileName;
                 ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
+
+                string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+                if (File.Exists(ResultHotkey.FilePath) && ResultHotkey.Name.Contains("- " + orphanedHotkeyLabel))
+                {
+                    ResultHotkey.Name = ResultHotkey.Name.Replace(" - " + orphanedHotkeyLabel, "");
+                }
 
                 programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
             }
@@ -74,6 +83,21 @@ namespace NHkey.View
             tempBind.Modifiers = Keyboard.Modifiers;
         }
 
+        /// <summary>
+        /// When finished inserting the hotkey combination.
+        /// </summary>
+        private void combinationField_KeyUp(object sender, KeyEventArgs e)
+        {
+            tempBind.Modifiers = Keyboard.Modifiers | tempBind.Modifiers;
+            ResultHotkey.SetBind(tempBind);
+            combinationField.Text = ResultHotkey.ToString();
+
+            if (ResultHotkey.Invalid)
+            {
+                InvalidHotkeyMsgBox();
+            }
+        }
+
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
@@ -83,9 +107,15 @@ namespace NHkey.View
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ResultHotkey.Name) || ResultHotkey.FilePath == "" || ResultHotkey.Hotkey.Invalid)
+            if (string.IsNullOrEmpty(ResultHotkey.Name) || ResultHotkey.FilePath == "")
             {
                 UnfilledFieldsMsgBox();
+                return;
+            }
+
+            if (ResultHotkey.Invalid)
+            {
+                InvalidHotkeyMsgBox();
                 return;
             }
 
@@ -93,18 +123,24 @@ namespace NHkey.View
             this.Close();
         }
 
+        /// <summary>
+        /// Show a messagebox indicating that required fields are empty.
+        /// </summary>
         private void UnfilledFieldsMsgBox()
         {
-            string message = FindResource("UnfilledFieldsMessage") as string;
+            string message = FindResource("UnfilledFieldsMsgBoxMessage") as string;
             string title = FindResource("UnfilledFieldsMsgBoxTitle") as string;
             MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
-        private void combinationField_KeyUp(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Show a messagebox indicating that key combination is invalid.
+        /// </summary>
+        private void InvalidHotkeyMsgBox()
         {
-            tempBind.Modifiers = Keyboard.Modifiers | tempBind.Modifiers;
-            ResultHotkey.SetBind(tempBind);
-            combinationField.Text = ResultHotkey.ToString();
+            string message = FindResource("InvalidHotkeyMsgBoxMessage") as string;
+            string title = FindResource("InvalidHotkeyMsgBoxTitle") as string;
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
     }

@@ -72,11 +72,16 @@ namespace NHkey.Model
             set
             {
                 icon = value;
-                OnPropertyChanged("Icon");
+                if (icon != null)
+                {
+                    OnPropertyChanged("Icon");
+                }
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool Invalid { get { return (hotkey.Key == 0 || hotkey.Modifier == (int)ModifierKeys.None); } }
 
         public HotkeyAssociation(Hotkey hotkey, string name, string path, string arguments = null)
         {
@@ -182,6 +187,15 @@ namespace NHkey.Model
             return ( FilePath == other.FilePath &&
                      Name == other.Name &&
                      Parameters == other.Parameters );
+        }
+
+        /// <summary>
+        /// True when the filepath is filled and hotkey is registered.
+        /// </summary>
+        public bool Enabled {
+            get {
+                return (FilePath != null && hotkey.Registered);
+            }
         }
     }
 }

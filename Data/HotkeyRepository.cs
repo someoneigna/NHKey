@@ -1,6 +1,7 @@
 ﻿using NHkey.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -13,6 +14,7 @@ namespace NHkey.Data
         public HotkeyRepository(IContext<Model.HotkeyAssociation> ncontext)
         {
             context = ncontext;
+            Load();
         }
 
         public void Add(Model.HotkeyAssociation element)

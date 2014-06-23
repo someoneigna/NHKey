@@ -47,7 +47,11 @@ namespace NHkey.View
         public MainWindow()
         {
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            // MyNotifyIcon.Icon = new System.Drawing.Icon(@"file:\icon.png");
+
+            /*Stream iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/NHkey;component/View/Resources/taskbar_icon.ico")).Stream;
+            MyNotifyIcon.Icon = new System.Drawing.Icon(iconStream);
+            iconStream.Dispose();*/
+
             MyNotifyIcon.Icon = System.Drawing.SystemIcons.Application;
             MyNotifyIcon.BalloonTipTitle = "Minimizado";
             MyNotifyIcon.BalloonTipText = "Para reabrir haga doble clic.";
@@ -62,6 +66,7 @@ namespace NHkey.View
             InitializeComponent();
 
             ViewModel = new MainWindowViewModel();
+
             DataContext = this;
 
             EditHotkey = new RelayCommand(() => EditSelectedItem(), () => hotkeyList.SelectedItem != null);
@@ -79,6 +84,24 @@ namespace NHkey.View
 
             SwitchLanguage(ViewModel.CurrentOptions.LanguageFile);
 
+        }
+
+        /// <summary>
+        /// Checks if the program for hotkeys still exists and marks their
+        /// name if dont.
+        /// </summary>
+        private void MarkOrphanedHotkeys()
+        {
+            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+            foreach (var hotkey in ViewModel.Hotkeys.Values.ToList())
+            {
+                if (!File.Exists(hotkey.FilePath))
+                {
+                    // Then it's invalid (orphaned)
+
+                    hotkey.Name += " - " + orphanedHotkeyLabel;
+                }
+            }
         }
 
         /// <summary>
@@ -114,6 +137,9 @@ namespace NHkey.View
             if (!string.IsNullOrEmpty(dialog.FileName))
             {
                 ViewModel.ImportHotkeys(dialog.FileName);
+
+                MarkOrphanedHotkeys();
+
                 hotkeyList.Items.Refresh();
                 hotkeyList.InvalidateVisual();
             }
@@ -296,6 +322,8 @@ namespace NHkey.View
             source.AddHook(WndProc);
 
             ViewModel.SetWindowHandle(new WindowInteropHelper(this).Handle);
+
+            MarkOrphanedHotkeys();
 
             if (new Options().Hidden)
             {

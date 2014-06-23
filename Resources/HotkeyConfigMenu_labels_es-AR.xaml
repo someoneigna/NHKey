@@ -19,8 +19,11 @@
     <system:String x:Key="CancelButton">Cancelar</system:String>
 
     <!-- Messages -->
-    <system:String x:Key="UnfilledFieldsMessage">Deben llenarse los campos antes de continuar.</system:String>
+    <system:String x:Key="UnfilledFieldsMsgBoxMessage">Deben llenarse los campos antes de continuar.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Campos en estado invalido</system:String>
+
+    <system:String x:Key="InvalidHotkeyMsgBoxMessage">Debe incluir un modificador (ctrl, shift, etc) y un caracter.</system:String>
+    <system:String x:Key="InvalidHotkeyMsgBoxTitle">Combinacion inválida</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="SearchProgramTitle">Selecciona un programa</system:String>

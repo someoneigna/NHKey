@@ -17,7 +17,7 @@ namespace NHkey.Helpers
         /// <returns>The icon as a BitmapSource </returns>
         public static BitmapSource GetIcon(string filename)
         {
-            if (filename == null) { return null; }
+            if (filename == null || !File.Exists(filename)) { return null; }
             System.Drawing.Bitmap bitmap = System.Drawing.Icon.ExtractAssociatedIcon(filename).ToBitmap();
             BitmapImage result = new BitmapImage();
 

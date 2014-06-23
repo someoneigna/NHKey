@@ -98,7 +98,6 @@ namespace NHkey.View
                 if (!File.Exists(hotkey.FilePath))
                 {
                     // Then it's invalid (orphaned)
-
                     hotkey.Name += " - " + orphanedHotkeyLabel;
                 }
             }

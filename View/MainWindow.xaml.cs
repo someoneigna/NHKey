@@ -87,8 +87,8 @@ namespace NHkey.View
         }
 
         /// <summary>
-        /// Checks if the program for hotkeys still exists and marks their
-        /// name if dont.
+        /// Checks the program for hotkeys that still exist and marks their
+        /// name if they dont.
         /// </summary>
         private void MarkOrphanedHotkeys()
         {
@@ -112,6 +112,9 @@ namespace NHkey.View
             App.Instance.SwitchLanguage(language);
         }
 
+        /// <summary>
+        /// Spawns a dialog to select hotkey export location.
+        /// </summary>
         private void ExportHotkeyDialog()
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -125,6 +128,9 @@ namespace NHkey.View
             }
         }
 
+        /// <summary>
+        /// Spawns a dialog to select hotkey import file.
+        /// </summary>
         private void ImportHotkeyDialog()
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -151,13 +157,19 @@ namespace NHkey.View
             SpawnHotkeyConfig(hotkey);
         }
 
+        /// <summary>
+        /// Called when Remove button pressed.
+        /// </summary>
         private void RemoveSelectedItem()
         {
             var hotkey = GetSelectedHotkey(hotkeyList);
             ViewModel.RemoveHotkey(hotkey);
             hotkeyList.Items.Refresh();
         }
-        
+
+        /// <summary>
+        /// Called when Add button pressed.
+        /// </summary>
         private void AddItem()
         {
             SpawnHotkeyConfig();

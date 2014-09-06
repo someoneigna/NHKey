@@ -110,6 +110,23 @@ namespace NHkey.ViewModel
         }
 
         /// <summary>
+        /// Checks the program for hotkeys that still exist and marks their
+        /// name if they dont.
+        /// <param name="orphanedHotkeyLabel">The string to append to no longer valid hotkeys.</param>
+        /// </summary>
+        public void MarkOrphanedHotkeys(string orphanedHotkeyLabel)
+        {
+            foreach (var hotkey in Hotkeys.Values.ToList())
+            {
+                if (!File.Exists(hotkey.FilePath))
+                {
+                    // Then it's invalid (orphaned)
+                    hotkey.Name += " - " + orphanedHotkeyLabel;
+                }
+            }
+        }
+
+        /// <summary>
         /// Updates the dictionary, adds new and deletes old if key changes,
         /// or updates hotkey values if key mantains the same.
         /// </summary>

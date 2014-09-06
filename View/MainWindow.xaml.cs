@@ -86,22 +86,7 @@ namespace NHkey.View
 
         }
 
-        /// <summary>
-        /// Checks the program for hotkeys that still exist and marks their
-        /// name if they dont.
-        /// </summary>
-        private void MarkOrphanedHotkeys()
-        {
-            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
-            foreach (var hotkey in ViewModel.Hotkeys.Values.ToList())
-            {
-                if (!File.Exists(hotkey.FilePath))
-                {
-                    // Then it's invalid (orphaned)
-                    hotkey.Name += " - " + orphanedHotkeyLabel;
-                }
-            }
-        }
+        
 
         /// <summary>
         /// Changes the current language merged dictionaries for the chosen language.
@@ -143,7 +128,8 @@ namespace NHkey.View
             {
                 ViewModel.ImportHotkeys(dialog.FileName);
 
-                MarkOrphanedHotkeys();
+                string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+                ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
 
                 hotkeyList.Items.Refresh();
                 hotkeyList.InvalidateVisual();
@@ -334,7 +320,8 @@ namespace NHkey.View
 
             ViewModel.SetWindowHandle(new WindowInteropHelper(this).Handle);
 
-            MarkOrphanedHotkeys();
+            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+            ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
 
             if (new Options().Hidden)
             {

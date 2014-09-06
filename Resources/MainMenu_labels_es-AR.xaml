@@ -18,5 +18,9 @@
     
     <!-- Hotkey labels -->
     <system:String x:Key="OrphanedHotkeyLabel">Invalida</system:String>
+    
+    <!--Notify Icon labels -->
+    <system:String x:Key="NotifyIconBalloonTipTitle">Minimizado</system:String>
+    <system:String x:Key="NotifyIconBalloonTipText">Para reabrir haga doble clic.</system:String>
 
 </ResourceDictionary>

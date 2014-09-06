@@ -32,7 +32,7 @@ namespace NHkey.View
 {
     public partial class MainWindow : Window
     {
-        private System.Windows.Forms.NotifyIcon MyNotifyIcon;
+        private System.Windows.Forms.NotifyIcon NotifyIcon;
 
         // Main window button commands
         public static RelayCommand EditHotkey { get; protected set; }
@@ -47,17 +47,14 @@ namespace NHkey.View
 
         public MainWindow()
         {
-            MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
+            NotifyIcon = new System.Windows.Forms.NotifyIcon();
 
-            /*Stream iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/NHkey;component/View/Resources/taskbar_icon.ico")).Stream;
-            MyNotifyIcon.Icon = new System.Drawing.Icon(iconStream);
-            iconStream.Dispose();*/
+            NotifyIcon.Icon = Properties.Resources.taskbar_icon;
 
-            MyNotifyIcon.Icon = System.Drawing.SystemIcons.Application;
-            MyNotifyIcon.BalloonTipTitle = "Minimizado";
-            MyNotifyIcon.BalloonTipText = "Para reabrir haga doble clic.";
-            
-            MyNotifyIcon.DoubleClick +=
+            NotifyIcon.BalloonTipTitle = FindResource("NotifyIconBalloonTipTitle") as string;
+            NotifyIcon.BalloonTipText = FindResource("NotifyIconBalloonTipText") as string;
+
+            NotifyIcon.DoubleClick +=
             delegate(object sender, EventArgs args)
             {
                 this.Show();
@@ -169,13 +166,13 @@ namespace NHkey.View
             if (this.WindowState == WindowState.Minimized)
             {
                 this.ShowInTaskbar = false;
-                MyNotifyIcon.Visible = true;
-                MyNotifyIcon.ShowBalloonTip(300);
+                NotifyIcon.Visible = true;
+                NotifyIcon.ShowBalloonTip(300);
 
             }
             else if (this.WindowState == WindowState.Normal)
             {
-                MyNotifyIcon.Visible = false;
+                NotifyIcon.Visible = false;
                 this.ShowInTaskbar = true;
             }
         }
@@ -329,8 +326,8 @@ namespace NHkey.View
                 this.Visibility = Visibility.Hidden;
                 this.WindowState = WindowState.Minimized;
                 this.ShowInTaskbar = false;
-                MyNotifyIcon.Visible = true;
-                MyNotifyIcon.ShowBalloonTip(300);
+                NotifyIcon.Visible = true;
+                NotifyIcon.ShowBalloonTip(300);
             }
         }
 

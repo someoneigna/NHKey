@@ -19,5 +19,8 @@
     <!-- Hotkey labels -->
     <system:String x:Key="OrphanedHotkeyLabel">Orphaned</system:String>
 
+    <!--Notify Icon labels -->
+    <system:String x:Key="NotifyIconBalloonTipTitle">Minimized</system:String>
+    <system:String x:Key="NotifyIconBalloonTipText">Double click to reopen window.</system:String>
 
 </ResourceDictionary>

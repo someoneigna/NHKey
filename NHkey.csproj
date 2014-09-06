@@ -218,13 +218,14 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="View\Resources\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="NHotkeyAPI\NHotkeyAPI.csproj">
       <Project>{e369ace1-7e02-492c-8a88-6860f2a34d18}</Project>
       <Name>NHotkeyAPI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Resources\icon.png" />
+    <None Include="View\Resources\taskbar_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

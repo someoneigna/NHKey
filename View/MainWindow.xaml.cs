@@ -34,6 +34,7 @@ namespace NHkey.View
     {
         private System.Windows.Forms.NotifyIcon MyNotifyIcon;
 
+        // Main window button commands
         public static RelayCommand EditHotkey { get; protected set; }
         public static RelayCommand DeleteHotkey { get; protected set; }
         public static RelayCommand AddHotkey { get; protected set; }
@@ -85,8 +86,6 @@ namespace NHkey.View
             SwitchLanguage(ViewModel.CurrentOptions.LanguageFile);
 
         }
-
-        
 
         /// <summary>
         /// Changes the current language merged dictionaries for the chosen language.
@@ -292,20 +291,22 @@ namespace NHkey.View
         }
 
         #region Helpers
-        private static HotkeyAssociation GetSelectedHotkey(System.Windows.Controls.ListBox list)
+
+        /// <summary>
+        /// Get selected item from <paramref name="list"/> and
+        /// return as a <see cref="HotkeyAssociation"/>.
+        /// </summary>
+        /// <param name="list">A <see cref="ListBox"/> containing <see cref="ViewModel.Hotkeys"/> elements.</param>
+        /// <returns>The value from the KeyValuePair, a <see cref="HotkeyAssociation"/>, or null if none is selected.</returns>
+        private static HotkeyAssociation GetSelectedHotkey(ListBox list)
         {
-            return (list != null && list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Value : null;
+            if (list == null)
+            {
+                throw new ArgumentNullException("list", "List to return selected value from cant be null");
+            }
+            return (list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Value : null;
         }
 
-        private static int GetSelectedKey(System.Windows.Controls.ListBox list)
-        {
-            return (list != null && list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Key : -1;
-        }
-
-        private object GetSelectedItem(System.Windows.Controls.ListBox list)
-        {
-            return (list != null && list.SelectedItem != null) ? list.SelectedItem : null;
-        }
         #endregion
 
         /// <summary>

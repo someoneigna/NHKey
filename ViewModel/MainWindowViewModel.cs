@@ -19,22 +19,30 @@ namespace NHkey.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase , INotifyCollectionChanged
     {
-        private Dictionary<int, HotkeyAssociation> hotkeys;
+        private Dictionary<int, HotkeyAssociation> _hotkeys;
 
-        public Dictionary<int, HotkeyAssociation> Hotkeys { get { return hotkeys; } protected set { hotkeys = value; OnPropertyChanged("Hotkeys"); } }
+        /// <summary>
+        /// Contains a Dictionary of keybind codes, and <see cref="HotkeyAssociation"/>s
+        /// </summary>
+        /// <value>Sets and gets the value of _hotkeys</value>
+        public Dictionary<int, HotkeyAssociation> Hotkeys
+        { 
+            get { return _hotkeys; } 
+            protected set { _hotkeys = value; OnPropertyChanged("Hotkeys"); } 
+        }
 
         public static IntPtr WindowHandle;
 
         private HotkeyRepository repository;
 
-        private static string SaveFilePath = Directory.GetCurrentDirectory() + "\\" + "hotkeys.data";
+        private static string HotkeyDataSaveFilepath = Directory.GetCurrentDirectory() + "\\" + "hotkeys.data";
 
         public Options CurrentOptions { get; set; }
         public Action Close { get; protected set; }
 
         public MainWindowViewModel()
         {
-            repository = new HotkeyRepository(new JSONHotkeyContext(SaveFilePath));
+            repository = new HotkeyRepository(new JSONHotkeyContext(HotkeyDataSaveFilepath));
 
             Hotkeys = LoadFromRepository();
 
@@ -44,6 +52,11 @@ namespace NHkey.ViewModel
             Close += new Action(() => SaveAndExit());
         }
 
+        /// <summary>
+        /// Gets the <see cref="HotkeyAssociation"/> elements from
+        /// the <see cref="HotkeyRespository"/> and returns a
+        /// Dictionary with the key combination as the key for each <see cref="Hotkey"/>
+        /// </summary>
         private Dictionary<int, HotkeyAssociation> LoadFromRepository()
         {
             var hotkeyDict = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
@@ -53,12 +66,19 @@ namespace NHkey.ViewModel
             return hotkeyDict;
         }
 
+        /// <summary>
+        /// Saves options and the hotkeys.
+        /// </summary>
         private void SaveAndExit()
         {
             saveHotkeys();
             CurrentOptions.Save();
         }
 
+        /// <summary>
+        /// For each hotkey key in <see cref="Hotkeys"/> dictionary,
+        /// disables the key hook.
+        /// </summary>
         public void DisableHotkeys()
         {
             foreach(var hotkey in Hotkeys.Values.ToList())
@@ -67,6 +87,10 @@ namespace NHkey.ViewModel
             }
         }
 
+        /// <summary>
+        /// For each hotkey key in <see cref="Hotkeys"/> dictionary,
+        /// disables the key hook.
+        /// </summary>
         public void EnableHotkeys()
         {
             foreach (var hotkey in Hotkeys.Values.ToList())
@@ -81,8 +105,6 @@ namespace NHkey.ViewModel
 
         /// <summary>
         /// Update the hotkey associations with the current window handle.
-        /// 
-        /// Rearranges the dictionary keys and registers the key bindings.
         /// </summary>
         /// <param name="handle">The handle for the current window/form.</param>
         public void SetWindowHandle(IntPtr handle)
@@ -112,8 +134,8 @@ namespace NHkey.ViewModel
         /// <summary>
         /// Checks the program for hotkeys that still exist and marks their
         /// name if they dont.
-        /// <param name="orphanedHotkeyLabel">The string to append to no longer valid hotkeys.</param>
         /// </summary>
+        /// <param name="orphanedHotkeyLabel">The string to append to no longer valid hotkeys.</param>
         public void MarkOrphanedHotkeys(string orphanedHotkeyLabel)
         {
             foreach (var hotkey in Hotkeys.Values.ToList())
@@ -136,9 +158,14 @@ namespace NHkey.ViewModel
         public bool AddOrUpdateHotkey(HotkeyAssociation newHotkey, HotkeyAssociation oldHotkey)
         {
             if (newHotkey.Invalid)
+            {
                 throw new ArgumentException("newHotkey", "The Hotkey for the Association has to be valid.");
+            }
+
             if (oldHotkey != null && oldHotkey.Invalid)
+            {
                 throw new ArgumentException("oldHotkey", "The Hotkey for the Association has to be valid.");
+            }
 
             // If the call was for Edit
             if (oldHotkey != null)
@@ -168,6 +195,12 @@ namespace NHkey.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Removes a <see cref="HotkeyAssociation"/> from the dictionary.
+        /// <para>Disables <paramref name="oldhotkey"/>, removes it from Hotkey dictionary
+        /// and removes it from repository.</para>
+        /// </summary>
+        /// <param name="oldHotkey"></param>
         public void RemoveHotkey(HotkeyAssociation oldHotkey)
         {
             oldHotkey.Disable();
@@ -176,6 +209,11 @@ namespace NHkey.ViewModel
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldHotkey));
         }
 
+        /// <summary>
+        /// Replaces a hotkey on the dictionary and repository.
+        /// </summary>
+        /// <param name="oldHotkey">The hotkey before modification.</param>
+        /// <param name="newHotkey">A copy of the hoktye with the modifications.</param>
         public void UpdateHotkey(HotkeyAssociation oldHotkey, HotkeyAssociation newHotkey)
         {
             // Swap the oldHotkey data with the new one, maintaining the key.
@@ -184,6 +222,10 @@ namespace NHkey.ViewModel
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newHotkey, oldHotkey));
         }
 
+        /// <summary>
+        /// Adds a new hotkey to the dictionary and the repository.
+        /// </summary>
+        /// <param name="hotkey">The <see cref="HotkeyAssociation"/> to add.</param>
         public void AddHotkey(HotkeyAssociation hotkey)
         {
             hotkey.Hotkey.Reload(WindowHandle);
@@ -262,11 +304,5 @@ namespace NHkey.ViewModel
                 CollectionChanged(this, e);
             }
         }
-
-        internal void Load()
-        {
-            LoadFromRepository();
-        }
     }
-
 }

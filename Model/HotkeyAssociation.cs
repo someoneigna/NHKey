@@ -86,7 +86,19 @@ namespace NHkey.Model
         /// Indicates if the file pointed at by <see cref="FilePath"/>
         /// no longer exists.
         /// </summary>
-        public bool Orphaned { get; set; }
+        private bool orphaned;
+
+        public bool Orphaned
+        {
+            get { return orphaned; }
+            set
+            {
+                orphaned = value;
+                OnPropertyChanged("Name");
+                OnPropertyChanged("Orphaned");
+            }
+        }
+         
 
         /// <summary>
         /// True when no key has been assigned to the keybind, or
@@ -208,6 +220,7 @@ namespace NHkey.Model
             FilePath = other.FilePath;
             Parameters = other.Parameters;
             Icon = other.Icon;
+            Orphaned = other.Orphaned;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

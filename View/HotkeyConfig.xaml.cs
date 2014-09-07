@@ -64,11 +64,7 @@ namespace NHkey.View
                 ResultHotkey.FilePath = dialog.FileName;
                 ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
 
-                string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
-                if (File.Exists(ResultHotkey.FilePath) && ResultHotkey.Name.Contains("- " + orphanedHotkeyLabel))
-                {
-                    ResultHotkey.Name = ResultHotkey.Name.Replace(" - " + orphanedHotkeyLabel, "");
-                }
+                ResultHotkey.Orphaned = !File.Exists(ResultHotkey.FilePath);
 
                 programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
             }

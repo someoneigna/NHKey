@@ -10,11 +10,14 @@ using System.Windows.Media.Imaging;
 
 namespace NHkey.Model
 {
+    /// <summary>
+    /// Contains a <see cref="NHotkeyAPI.Hotkey"/>,
+    /// manages hotkey status and associates it with a program.
+    /// </summary>
     [DataContract]
     public class HotkeyAssociation : INotifyPropertyChanged, IEquatable<HotkeyAssociation>
     {
         private NHotkeyAPI.Hotkey hotkey;
-
         public NHotkeyAPI.Hotkey Hotkey
         {
             get { return hotkey; }
@@ -79,9 +82,25 @@ namespace NHkey.Model
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Indicates if the file pointed at by <see cref="FilePath"/>
+        /// no longer exists.
+        /// </summary>
+        public bool Orphaned { get; set; }
 
-        public bool Invalid { get { return (hotkey.Key == 0 || hotkey.Modifier == (int)ModifierKeys.None); } }
+        /// <summary>
+        /// True when no key has been assigned to the keybind, or
+        /// no modifier set.
+        /// </summary>
+        /// <value><see cref="NHotkeyAPI.Hotkey.Key"/></value>
+        /// <value><see cref="NHotkeyAPI.Hotkey.Modifier"/></value>
+        public bool Invalid
+        { 
+            get 
+            { 
+                return (hotkey.Key == 0 || hotkey.Modifier == (int)ModifierKeys.None); 
+            } 
+        }
 
         public HotkeyAssociation(Hotkey hotkey, string name, string path, string arguments = null)
         {
@@ -91,12 +110,16 @@ namespace NHkey.Model
             Parameters = arguments;
         }
 
+        /// <summary>
+        /// Makes a copy of <paramref name="editHotkey"/>
+        /// </summary>
+        /// <param name="editHotkey">A instace of <see cref="HotkeyAssociation"/></param>
         public HotkeyAssociation(HotkeyAssociation editHotkey)
         {
             Hotkey = (editHotkey.Hotkey != null) ? new Hotkey(editHotkey.Hotkey) : null;
             FilePath = (editHotkey.FilePath != null) ? string.Copy(editHotkey.FilePath) : null;
             Parameters = (editHotkey.Parameters != null) ? string.Copy(editHotkey.Parameters) : null;
-            Icon = Icon;
+            Icon = Icon; // Force the Icon to load from FilePath
             Name = (editHotkey.Name != null) ? string.Copy(editHotkey.Name) : null;
         }
 
@@ -105,6 +128,10 @@ namespace NHkey.Model
             Hotkey = new Hotkey();
         }
 
+        /// <summary>
+        /// Changes the contained <see cref="NHotkeyAPI.Hotkey"/> keybind.
+        /// </summary>
+        /// <param name="tempBind">A <see cref="KeyBinding"/></param>
         internal void SetBind(KeyBinding tempBind)
         {
             int vkey = KeyInterop.VirtualKeyFromKey(tempBind.Key);
@@ -146,6 +173,10 @@ namespace NHkey.Model
             return Hotkey.GetHashCode();
         }
 
+        /// <summary>
+        /// Registers the contained <see cref="NHotkeyAPI.Hotkey"/>
+        /// only if it's not already registered.
+        /// </summary>
         public void Enable()
         {
             if (!Hotkey.Registered)
@@ -154,6 +185,11 @@ namespace NHkey.Model
             }
         }
 
+
+        /// <summary>
+        /// Unregisters the contained <see cref="NHotkeyAPI.Hotkey"/>
+        /// only if it's registered.
+        /// </summary>
         public void Disable()
         {
             if (Hotkey.Registered)
@@ -165,7 +201,7 @@ namespace NHkey.Model
         /// <summary>
         /// Swap the values for HotkeyAssociation skipping the Hotkey.
         /// </summary>
-        /// <param name="other">Another <see cref="HotkeAssociation"/>.</param>
+        /// <param name="other">Another <see cref="HotkeyAssociation"/>.</param>
         internal void Swap(HotkeyAssociation other)
         {
             Name = other.Name;
@@ -174,6 +210,7 @@ namespace NHkey.Model
             Icon = other.Icon;
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property)
         {
             if (PropertyChanged != null)

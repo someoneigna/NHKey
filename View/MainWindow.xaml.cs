@@ -32,8 +32,9 @@ namespace NHkey.View
 {
     public partial class MainWindow : Window
     {
-        private System.Windows.Forms.NotifyIcon MyNotifyIcon;
+        private System.Windows.Forms.NotifyIcon NotifyIcon;
 
+        // Main window button commands
         public static RelayCommand EditHotkey { get; protected set; }
         public static RelayCommand DeleteHotkey { get; protected set; }
         public static RelayCommand AddHotkey { get; protected set; }
@@ -46,26 +47,27 @@ namespace NHkey.View
 
         public MainWindow()
         {
-            MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
+            NotifyIcon = new System.Windows.Forms.NotifyIcon();
 
-            /*Stream iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/NHkey;component/View/Resources/taskbar_icon.ico")).Stream;
-            MyNotifyIcon.Icon = new System.Drawing.Icon(iconStream);
-            iconStream.Dispose();*/
+            NotifyIcon.Icon = Properties.Resources.taskbar_icon;
 
-            MyNotifyIcon.Icon = System.Drawing.SystemIcons.Application;
-            MyNotifyIcon.BalloonTipTitle = "Minimizado";
-            MyNotifyIcon.BalloonTipText = "Para reabrir haga doble clic.";
-            
-            MyNotifyIcon.DoubleClick +=
+            NotifyIcon.BalloonTipTitle = FindResource("NotifyIconBalloonTipTitle") as string;
+            NotifyIcon.BalloonTipText = FindResource("NotifyIconBalloonTipText") as string;
+
+            NotifyIcon.DoubleClick +=
             delegate(object sender, EventArgs args)
             {
                 this.Show();
                 this.WindowState = WindowState.Normal;
             };
 
+            ViewModel = new MainWindowViewModel(); 
+
+            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+            ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
+
             InitializeComponent();
 
-            ViewModel = new MainWindowViewModel();
 
             DataContext = this;
 
@@ -87,23 +89,6 @@ namespace NHkey.View
         }
 
         /// <summary>
-        /// Checks if the program for hotkeys still exists and marks their
-        /// name if dont.
-        /// </summary>
-        private void MarkOrphanedHotkeys()
-        {
-            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
-            foreach (var hotkey in ViewModel.Hotkeys.Values.ToList())
-            {
-                if (!File.Exists(hotkey.FilePath))
-                {
-                    // Then it's invalid (orphaned)
-                    hotkey.Name += " - " + orphanedHotkeyLabel;
-                }
-            }
-        }
-
-        /// <summary>
         /// Changes the current language merged dictionaries for the chosen language.
         /// </summary>
         /// <param name="language">The ending indicating language of the resource dictionaries.</param>
@@ -112,6 +97,9 @@ namespace NHkey.View
             App.Instance.SwitchLanguage(language);
         }
 
+        /// <summary>
+        /// Spawns a dialog to select hotkey export location.
+        /// </summary>
         private void ExportHotkeyDialog()
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -125,6 +113,9 @@ namespace NHkey.View
             }
         }
 
+        /// <summary>
+        /// Spawns a dialog to select hotkey import file.
+        /// </summary>
         private void ImportHotkeyDialog()
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -137,7 +128,8 @@ namespace NHkey.View
             {
                 ViewModel.ImportHotkeys(dialog.FileName);
 
-                MarkOrphanedHotkeys();
+                string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+                ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
 
                 hotkeyList.Items.Refresh();
                 hotkeyList.InvalidateVisual();
@@ -151,13 +143,19 @@ namespace NHkey.View
             SpawnHotkeyConfig(hotkey);
         }
 
+        /// <summary>
+        /// Called when Remove button pressed.
+        /// </summary>
         private void RemoveSelectedItem()
         {
             var hotkey = GetSelectedHotkey(hotkeyList);
             ViewModel.RemoveHotkey(hotkey);
             hotkeyList.Items.Refresh();
         }
-        
+
+        /// <summary>
+        /// Called when Add button pressed.
+        /// </summary>
         private void AddItem()
         {
             SpawnHotkeyConfig();
@@ -172,13 +170,13 @@ namespace NHkey.View
             if (this.WindowState == WindowState.Minimized)
             {
                 this.ShowInTaskbar = false;
-                MyNotifyIcon.Visible = true;
-                MyNotifyIcon.ShowBalloonTip(300);
+                NotifyIcon.Visible = true;
+                NotifyIcon.ShowBalloonTip(300);
 
             }
             else if (this.WindowState == WindowState.Normal)
             {
-                MyNotifyIcon.Visible = false;
+                NotifyIcon.Visible = false;
                 this.ShowInTaskbar = true;
             }
         }
@@ -294,20 +292,22 @@ namespace NHkey.View
         }
 
         #region Helpers
-        private static HotkeyAssociation GetSelectedHotkey(System.Windows.Controls.ListBox list)
+
+        /// <summary>
+        /// Get selected item from <paramref name="list"/> and
+        /// return as a <see cref="HotkeyAssociation"/>.
+        /// </summary>
+        /// <param name="list">A <see cref="ListBox"/> containing <see cref="ViewModel.Hotkeys"/> elements.</param>
+        /// <returns>The value from the KeyValuePair, a <see cref="HotkeyAssociation"/>, or null if none is selected.</returns>
+        private static HotkeyAssociation GetSelectedHotkey(ListBox list)
         {
-            return (list != null && list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Value : null;
+            if (list == null)
+            {
+                throw new ArgumentNullException("list", "List to return selected value from cant be null");
+            }
+            return (list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Value : null;
         }
 
-        private static int GetSelectedKey(System.Windows.Controls.ListBox list)
-        {
-            return (list != null && list.SelectedItem != null) ? ((KeyValuePair<int, HotkeyAssociation>)list.SelectedItem).Key : -1;
-        }
-
-        private object GetSelectedItem(System.Windows.Controls.ListBox list)
-        {
-            return (list != null && list.SelectedItem != null) ? list.SelectedItem : null;
-        }
         #endregion
 
         /// <summary>
@@ -322,15 +322,14 @@ namespace NHkey.View
 
             ViewModel.SetWindowHandle(new WindowInteropHelper(this).Handle);
 
-            MarkOrphanedHotkeys();
 
             if (new Options().Hidden)
             {
                 this.Visibility = Visibility.Hidden;
                 this.WindowState = WindowState.Minimized;
                 this.ShowInTaskbar = false;
-                MyNotifyIcon.Visible = true;
-                MyNotifyIcon.ShowBalloonTip(300);
+                NotifyIcon.Visible = true;
+                NotifyIcon.ShowBalloonTip(300);
             }
         }
 

@@ -14,11 +14,11 @@ Just copy the Binary folder in an accesible folder and it's ready to be used.
 ## Screenshots
 
 ##### Here is the main window, you can also drag and drop a program to the list and the hotkey creation window will be called with the program route.
-![Main Window](Readme_Resources/hotkey_mainwindow.png?raw=true)
+![Main Window](Readme_Resources/hotkey_mainwindow.PNG?raw=true)
 =======
 
 ##### You can add and edit hotkeys specifying the program and also add parameters:
-![Create/Edit Hotkey Window](Readme_Resources/hotkey_creation_window.png?raw=true)
+![Create/Edit Hotkey Window](Readme_Resources/hotkey_creation_window.PNG?raw=true)
 =======
 
 ##### Here is how the hotkey looks in the list. You can also execute the program by double clicking.

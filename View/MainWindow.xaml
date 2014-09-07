@@ -19,7 +19,7 @@
         >
 
     <Window.Resources>
-        <!--<vm:MainWindowViewModel x:Key="MainVM"/>-->
+        <v:HotkeyNameConverter x:Key="HotkeyNameConverter" />
         <v:MainWindow x:Key="MainWindowOptions"/>
         <Style TargetType="ToolTip">
             <Setter Property="Background" Value="Transparent"/>
@@ -51,7 +51,7 @@
                 <Border BorderThickness="2" CornerRadius="2" BorderBrush="{StaticResource ListBorder}" Width="52" Height="52">
                     <Image Name="hotkeyIcon" Source="{Binding Value.Icon}"  Height="48" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <TextBlock DockPanel.Dock="Top" Name="hotkeyName" Text="{Binding Value.Name}" FontFamily="Rockwell" FontSize="18" Margin="8,0,0,0" TextTrimming="None" TextWrapping="Wrap" />
+                <TextBlock DockPanel.Dock="Top" Name="hotkeyName" Text="{Binding Value, Converter={StaticResource HotkeyNameConverter}}" FontFamily="Rockwell" FontSize="18" Margin="8,0,0,0" TextTrimming="None" TextWrapping="Wrap" />
                 <TextBlock DockPanel.Dock="Top" Name="hotkeyValue" Text="{Binding Value}" FontFamily="Verdana" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" />
                 <TextBlock DockPanel.Dock="Left" Name="hotkeyParameter" Text="{Binding Value.Parameters}" FontFamily="Rockwell" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,2,0,0" TextWrapping="Wrap" />
                 <DockPanel.ToolTip >

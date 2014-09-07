@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Windows.Data;
 
 namespace NHkey.Data
 {
@@ -25,17 +26,21 @@ namespace NHkey.Data
         [DataMember]
         public int Modifiers { get; set; }
 
+        [DataMember]
+        public bool Orphaned { get; set; }
+
         public HotkeyData()
         {
         }
 
-        public HotkeyData(string name, string filepath, string parameters, int key, int modifiers)
+        public HotkeyData(HotkeyAssociation hotkeyAssociation)
         {
-            Name = name;
-            FilePath = filepath;
-            Parameters = parameters;
-            Key = key;
-            Modifiers = modifiers;
+            Name = hotkeyAssociation.Name;
+            FilePath = hotkeyAssociation.FilePath;
+            Parameters = hotkeyAssociation.Parameters;
+            Key = hotkeyAssociation.Hotkey.Key;
+            Modifiers = hotkeyAssociation.Hotkey.Modifier;
+            Orphaned = hotkeyAssociation.Orphaned;
         }
 
         public static NHkey.Model.HotkeyAssociation GetHotkey(HotkeyData data)
@@ -45,7 +50,7 @@ namespace NHkey.Data
 
         public static HotkeyData GetData(HotkeyAssociation hotkey)
         {
-            return new HotkeyData(hotkey.Name, hotkey.FilePath, hotkey.Parameters, hotkey.Hotkey.Key, hotkey.Hotkey.Modifier); 
+            return new HotkeyData(hotkey);
         }
 
     }

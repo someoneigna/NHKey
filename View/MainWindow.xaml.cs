@@ -61,9 +61,13 @@ namespace NHkey.View
                 this.WindowState = WindowState.Normal;
             };
 
+            ViewModel = new MainWindowViewModel(); 
+
+            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
+            ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
+
             InitializeComponent();
 
-            ViewModel = new MainWindowViewModel();
 
             DataContext = this;
 
@@ -318,8 +322,6 @@ namespace NHkey.View
 
             ViewModel.SetWindowHandle(new WindowInteropHelper(this).Handle);
 
-            string orphanedHotkeyLabel = FindResource("OrphanedHotkeyLabel") as string;
-            ViewModel.MarkOrphanedHotkeys(orphanedHotkeyLabel);
 
             if (new Options().Hidden)
             {

@@ -138,12 +138,12 @@ namespace NHkey.ViewModel
         /// <param name="orphanedHotkeyLabel">The string to append to no longer valid hotkeys.</param>
         public void MarkOrphanedHotkeys(string orphanedHotkeyLabel)
         {
-            foreach (var hotkey in Hotkeys.Values.ToList())
+            foreach (var hotkey in Hotkeys.Values)
             {
                 if (!File.Exists(hotkey.FilePath))
                 {
                     // Then it's invalid (orphaned)
-                    hotkey.Name += " - " + orphanedHotkeyLabel;
+                    hotkey.Orphaned = true;
                 }
             }
         }

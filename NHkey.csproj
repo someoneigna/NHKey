@@ -95,6 +95,7 @@
     <Compile Include="Helpers\BitmapHelper.cs" />
     <Compile Include="Model\HotkeyAssociation.cs" />
     <Compile Include="Model\HotkeyAssociationFactory.cs" />
+    <Compile Include="View\HotkeyValueConverter.cs" />
     <Compile Include="View\OptionDialog.xaml.cs">
       <DependentUpon>OptionDialog.xaml</DependentUpon>
     </Compile>

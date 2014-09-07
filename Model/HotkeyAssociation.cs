@@ -83,6 +83,12 @@ namespace NHkey.Model
         }
 
         /// <summary>
+        /// Indicates if the file pointed at by <see cref="FilePath"/>
+        /// no longer exists.
+        /// </summary>
+        public bool Orphaned { get; set; }
+
+        /// <summary>
         /// True when no key has been assigned to the keybind, or
         /// no modifier set.
         /// </summary>

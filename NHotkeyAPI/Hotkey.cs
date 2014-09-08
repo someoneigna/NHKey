@@ -17,8 +17,15 @@ namespace NHkey.NHotkeyAPI
         /// </summary>
         public int Key { get; protected set; }
 
+        /// <summary>
+        /// Virtual Modifier key code
+        /// </summary>
         public int Modifier { get; protected set; }
 
+        /// <summary>
+        /// True when the <see cref="Register"/> has been called and the
+        /// keybind is hooked.
+        /// </summary>
         public bool Registered { get; protected set; }
 
         /// <summary>
@@ -73,15 +80,24 @@ namespace NHkey.NHotkeyAPI
 
         #region Public Methods
 
+        /// <summary>
+        /// Swaps the key and modifier of the keybind.
+        /// </summary>
+        /// <param name="bind">Tuple containing virtual key code, and virtual modifier code.</param>
         public virtual void SwitchBind(Tuple<int, int> bind)
         {
             SwitchBind(bind.Item1, bind.Item2);
         }
 
-        public virtual void SwitchBind(int key, int mod)
+        /// <summary>
+        /// Swaps the key and modifier of the keybind.
+        /// </summary>
+        /// <param name="key">A virtual key code.</param>
+        /// <param name="modifier">A virtual modifier key code.</param>
+        public virtual void SwitchBind(int key, int modifier)
         {
             Key = key;
-            Modifier = mod;
+            Modifier = modifier;
         }
 
         /// <summary>
@@ -100,6 +116,10 @@ namespace NHkey.NHotkeyAPI
             return Registered;
         }
 
+        /// <summary>
+        /// Calls Win32API RegisterHotkey(), registers hotkey hooking it globally.
+        /// </summary>
+        /// <returns>True if </returns>
         public bool Register()
         {
             bool success = NativeMethods.RegisterHotKey(Handle, Id, Modifier, Key);
@@ -112,6 +132,12 @@ namespace NHkey.NHotkeyAPI
             return Registered;
         }
 
+        // <summary>
+        /// Calls Win32API UnregisterHotkey(), unhooking the keybind off
+        /// globally. 
+        /// </summary>
+        /// <returns>True if unregistered correctly, false otherwise.</returns>
+        /// <exception cref="Win32Exception">If failed to unregister keybind properly.</exception>
         public bool Unregister()
         {
             bool success = NativeMethods.UnregisterHotKey(Handle, Id);

@@ -19,8 +19,7 @@ namespace NHkey.NHotkeyAPI
         /// <param name="windowHandle">The handle to the current application window.</param>
         public static Hotkey Create(int virtualKey, int virtualModifier, IntPtr handle)
         {
-            Hotkey newHotkey = new Hotkey(virtualKey, virtualModifier, handle);
-            return newHotkey;
+            return new Hotkey(virtualKey, virtualModifier, handle);
         }
 
         /// <summary>
@@ -31,18 +30,7 @@ namespace NHkey.NHotkeyAPI
         /// <returns>A copy constructed hotkey.</returns>
         public static Hotkey CreateWith(Hotkey hotkey, IntPtr handle)
         {
-            Hotkey newHotkey = new Hotkey(hotkey.Key, hotkey.Modifier, handle);
-            return newHotkey;
-        }
-
-        public static bool RegisterHotkey(Hotkey hotkey)
-        {
-            return NativeMethods.RegisterHotKey(hotkey.Handle, hotkey.Id, hotkey.Modifier, hotkey.Key);
-        }
-
-        public static bool UnregisterHotkey(Hotkey hotkey)
-        {
-            return NativeMethods.UnregisterHotKey(hotkey.Handle, hotkey.Id);
+            return new Hotkey(hotkey.Key, hotkey.Modifier, handle);
         }
     }
 }

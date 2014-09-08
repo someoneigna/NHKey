@@ -384,6 +384,9 @@ namespace NHkey.View
         private void languageChosen_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SwitchLanguage(ViewModel.CurrentOptions.LanguageFile);
+            // Set notify icon language again
+            NotifyIcon.BalloonTipTitle = FindResource("NotifyIconBalloonTipTitle") as string;
+            NotifyIcon.BalloonTipText = FindResource("NotifyIconBalloonTipText") as string;
         }
 
     }

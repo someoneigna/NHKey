@@ -26,6 +26,7 @@ namespace NHkey.Model
         private bool loaded;
         private const int FIELD_NAME_POS = 0;
         private const int VALUE_POS = 1;
+        private int tagLength = "X_".Length;
         private object[] value = new object[(int)Field.MAX_OPTIONS];
         private string[] str = new string[(int)Field.MAX_OPTIONS];
         private Dictionary<string, object> map = new Dictionary<string, object>();
@@ -87,7 +88,7 @@ namespace NHkey.Model
             {
                 if (availableLanguages.Contains(value))
                 {
-                    this.value[(int)Field.S_LANGUAGE] = value;
+                    Set(Field.S_LANGUAGE, value);
                     //OnPropertyChanged("Language");
                 }
                 else
@@ -97,36 +98,47 @@ namespace NHkey.Model
             }
         }
 
+        /// <summary>
+        /// Flag to set window visibility at start.
+        /// </summary>
         public bool Hidden
         {
             get
             {
-                return (bool)this.value[(int)Field.B_INIT_HIDDEN];
+                return (bool)Get(Field.B_INIT_HIDDEN);
             }
             set
             {
-                this.value[(int)Field.B_INIT_HIDDEN] = value;
+                Set(Field.B_INIT_HIDDEN, value);
                 OnPropertyChanged("Hidden");
             }
         }
 
+        /// <summary>
+        /// Flag to set program init at windows startup in registry.
+        /// </summary>
         public bool WindowsStartup
         {
             get
             {
-                return (bool)this.value[(int)Field.B_START_WITH_WINDOWS];
+                return (bool)Get(Field.B_START_WITH_WINDOWS);
             }
             set
             {
-                this.value[(int)Field.B_START_WITH_WINDOWS] = value;
+                Set(Field.B_START_WITH_WINDOWS, value);
                 OnPropertyChanged("WindowsStartup");
             }
         }
 
-        public void Set(Field opt, object value)
+        private void Set(Field option, object value)
         {
-            int index = (int)opt;
+            int index = (int)option;
             this.value[index] = value;
+        }
+
+        private object Get(Field option)
+        {
+            return this.value[(int)option];
         }
 
         /// <summary>
@@ -155,7 +167,7 @@ namespace NHkey.Model
                 string data = null;
                 for (int i = 0; i < (int)Field.MAX_OPTIONS; i++)
                 {
-                    data += str[i].Remove(0, 2) + "=" + value[i] + "\n";
+                    data += str[i].Remove(0, tagLength) + "=" + value[i] + "\n";
                 }
 
                 File.WriteAllText(saveFile, data);

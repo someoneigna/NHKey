@@ -34,22 +34,6 @@ namespace NHkey.View
         {
         }
 
-        #region Save and Cancel  // Removed for now
-        private void guardarButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            OptionViewModel.Save();
-            Close();
-        }
-
-        private void cancelarButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            OptionViewModel = null;
-            Close();
-        }
-        #endregion
-
         private void languageChosen_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var combobox = sender as ComboBox;

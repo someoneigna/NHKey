@@ -72,7 +72,7 @@ namespace NHkey.View
 
         private void combinationField_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            combinationField.Text = "Setting combination...";
+            combinationField.Text = FindResource("SettingKeyCombinationLabel") as string; ;
             ViewModel.Bind.Key = e.Key;
             ViewModel.Bind.Modifiers = Keyboard.Modifiers;
         }

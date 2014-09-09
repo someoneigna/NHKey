@@ -8,6 +8,10 @@ using NHotkeyAPI;
 
 namespace NHkey.NHotkeyAPI
 {
+    /// <summary>
+    /// Contains a key bind of virtual keys to
+    /// use with WinAPI RegisterHotkey()
+    /// </summary>
     public class Hotkey : IDisposable, IEquatable<Hotkey>, IEquatable<Tuple<int, int>>
     {
         #region Properties

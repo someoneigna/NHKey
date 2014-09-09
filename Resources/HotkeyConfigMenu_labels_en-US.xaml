@@ -12,6 +12,8 @@
     <system:String x:Key="CombinationLabel">Combination</system:String>
     <system:String x:Key="CombinationFieldTooltip">The key combination for the hotkey.</system:String>
 
+    <system:String x:Key="SettingKeyCombinationLabel">Setting combination...</system:String>
+
     <!-- Buttons -->
     <system:String x:Key="SearchButton">Search</system:String>
     <system:String x:Key="SearchButtonTooltip">Opens a dialog for program selection.</system:String>

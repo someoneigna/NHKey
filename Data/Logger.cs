@@ -9,7 +9,8 @@ namespace NHkey.Data
     public class Logger : IDisposable
     {
         private static string defaultPath = "App.log";
-        private readonly string logPath;
+        private string logPath;
+        private static int retries = 0;
         public StreamWriter Log { get; protected set; }
 
         public bool CanWrite { get; protected set; }
@@ -42,10 +43,18 @@ namespace NHkey.Data
                 OpenDefaultPath();
                 Append("Log", "Could open " + path + " got an exception: " + access.Message);
             }
+            catch (IOException)
+            {
+                logPath += string.Format(".{0}", retries + 1);
+                Open(logPath);
+                return;
+            }
             finally
             {
                 if (Log != null)
+                {
                     CanWrite = Log.BaseStream.CanWrite;
+                }
             }
 
         }

@@ -101,7 +101,7 @@ namespace NHkey.View
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ViewModel.ProgramFile))
+            if (string.IsNullOrEmpty(ViewModel.Model.Name))
             {
                 UnfilledFieldMsgBox(FindResource("UnfilledHotkeyNameErrorMessage") as string);
                 nameField.Focus();

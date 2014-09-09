@@ -66,6 +66,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -95,6 +96,7 @@
     <Compile Include="Helpers\BitmapHelper.cs" />
     <Compile Include="Model\HotkeyAssociation.cs" />
     <Compile Include="Model\HotkeyAssociationFactory.cs" />
+    <Compile Include="ViewModel\HotkeyConfigViewModel.cs" />
     <Compile Include="View\HotkeyValueConverter.cs" />
     <Compile Include="View\OptionDialog.xaml.cs">
       <DependentUpon>OptionDialog.xaml</DependentUpon>

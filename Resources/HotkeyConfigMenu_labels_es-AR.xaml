@@ -19,6 +19,9 @@
     <system:String x:Key="CancelButton">Cancelar</system:String>
 
     <!-- Messages -->
+    <system:String x:Key="UnfilledProgramPathErrorMessage">Debe elegir un archivo o programa.</system:String>
+    <system:String x:Key="UnfilledHotkeyNameErrorMessage">Debe definir un nombre para la hotkey.</system:String>
+    
     <system:String x:Key="UnfilledFieldsMsgBoxMessage">Deben llenarse los campos antes de continuar.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Campos en estado invalido</system:String>
 

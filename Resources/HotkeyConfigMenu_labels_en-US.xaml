@@ -19,6 +19,9 @@
     <system:String x:Key="CancelButton">Cancel</system:String>
 
     <!-- Messages -->
+    <system:String x:Key="UnfilledProgramPathErrorMessage">You must choose a file or program.</system:String>
+    <system:String x:Key="UnfilledHotkeyNameErrorMessage">You must set a name for the hotkey.</system:String>
+    
     <system:String x:Key="UnfilledFieldsMsgBoxMessage">You must fill all the fields before continuing.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Invalid field state</system:String>
 

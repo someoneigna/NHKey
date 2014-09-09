@@ -44,20 +44,20 @@
         </Grid.ColumnDefinitions>
 
         <Label Content="{DynamicResource NameLabel}"  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontFamily="Rockwell" FontWeight="Bold" Foreground="#FFDEDEDE" Grid.Column="1"  Grid.Row="1"  />
-        <TextBox  Text="{Binding Path=Name}"  Name="nameField"  Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="False" Grid.Row="1" TextAlignment="Justify" KeyboardNavigation.TabIndex="0" FontSize="14"/>
+        <TextBox  Text="{Binding Model.Name, NotifyOnValidationError=True}"  Name="nameField"  Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" AllowDrop="False" Grid.Row="1" TextAlignment="Justify" KeyboardNavigation.TabIndex="0" FontSize="14"/>
 
         <Button Content="{DynamicResource SearchButton}" Name="searchProgramButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="searchProgramButton_Click" Grid.Column="5" Grid.Row="3" Grid.ColumnSpan="1" ToolTip="{DynamicResource SearchButtonTooltip}"  KeyboardNavigation.TabIndex="1" FontSize="14"/>
         <Label Content="{DynamicResource ProgramLabel}" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="12" FontFamily="Rockwell" FontWeight="Bold" Foreground="#FFDEDEDE" Grid.Column="1" Grid.Row="3" />
-        <TextBox Text=""  Name="programField" IsReadOnly="True" AcceptsTab="True"  Grid.Column="3" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextAlignment="Justify" FontSize="14"/>
+        <TextBox Text="{Binding Program, Mode=OneWay}"  Name="programField" IsReadOnly="True" AcceptsTab="True"  Grid.Column="3" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextAlignment="Justify" FontSize="14"/>
 
         <Label Content="{DynamicResource ParameterLabel}"  Name="parameterLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="12" FontFamily="Rockwell" FontWeight="Bold" Foreground="#FFDEDEDE" Grid.Column="1" Grid.Row="5" />
-        <TextBox  Text="{Binding Path=Parameters}" ToolTip="{DynamicResource ParameterFieldTooltip}" Name="parametersField" AcceptsTab="True"  Grid.Column="3" Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" KeyboardNavigation.TabIndex="2" FontSize="14"  />
+        <TextBox  Text="{Binding Model.Parameters}" ToolTip="{DynamicResource ParameterFieldTooltip}" Name="parametersField" AcceptsTab="True"  Grid.Column="3" Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" KeyboardNavigation.TabIndex="2" FontSize="14"  />
 
         <Label Content="{DynamicResource CombinationLabel}"  HorizontalAlignment="Center" VerticalAlignment="Center" Name="label3"   FontSize="12" FontFamily="Rockwell" FontWeight="Bold" FontStyle="Normal" Foreground="#FFDEDEDE" Grid.Column="1" Grid.Row="7"/>
-        <TextBox Name="combinationField" KeyDown="combinationField_KeyDown" AcceptsTab="False" IsReadOnly="True" KeyUp="combinationField_KeyUp"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"   Grid.Row="7" Grid.Column="3" ToolTip="{DynamicResource CombinationFieldTooltip}" TextAlignment="Center" Text="Ctrl + T" TextBlock.FontSize="12" KeyboardNavigation.TabIndex="3" FontSize="14"/>
+        <TextBox Name="combinationField" KeyDown="combinationField_KeyDown" AcceptsTab="False" IsReadOnly="True" KeyUp="combinationField_KeyUp"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"   Grid.Row="7" Grid.Column="3" ToolTip="{DynamicResource CombinationFieldTooltip}" TextAlignment="Center"  TextBlock.FontSize="12" KeyboardNavigation.TabIndex="3" FontSize="14"/>
 
         <Border BorderThickness="1" Grid.Column="5" Grid.Row="5" Grid.RowSpan="3"  Width="64" Height="64" BorderBrush="Black" >
-            <Image  Source="{Binding Path=Icon}" HorizontalAlignment="Stretch" Name="icon" Stretch="UniformToFill"  VerticalAlignment="Stretch"  Grid.Column="5" Grid.Row="5" Grid.RowSpan="3" OpacityMask="Black" Height="64" Width="64"/>
+            <Image  Source="{Binding Model.Icon}" HorizontalAlignment="Stretch" Name="icon" Stretch="UniformToFill"  VerticalAlignment="Stretch"  Grid.Column="5" Grid.Row="5" Grid.RowSpan="3" OpacityMask="Black" Height="64" Width="64"/>
         </Border>
         
         <DockPanel Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="1"  HorizontalAlignment="Stretch">

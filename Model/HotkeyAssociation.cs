@@ -47,6 +47,7 @@ namespace NHkey.Model
             {
                 path = value;
                 OnPropertyChanged("FilePath");
+                OnPropertyChanged("Icon");
             }
         }
 
@@ -66,9 +67,9 @@ namespace NHkey.Model
         {
             get
             {
-                if (icon == null && !string.IsNullOrEmpty(FilePath))
+                if (!string.IsNullOrEmpty(FilePath))
                 {
-                    Icon = Helpers.BitmapHelper.GetIcon(FilePath);
+                    icon = Helpers.BitmapHelper.GetIcon(FilePath);
                 }
                 return icon; 
             }
@@ -128,6 +129,11 @@ namespace NHkey.Model
         /// <param name="editHotkey">A instace of <see cref="HotkeyAssociation"/></param>
         public HotkeyAssociation(HotkeyAssociation editHotkey)
         {
+            if (editHotkey == null)
+            {
+                throw new ArgumentNullException("editHotkey", "Cant copy a null instance.");
+            }
+
             Hotkey = (editHotkey.Hotkey != null) ? new Hotkey(editHotkey.Hotkey) : null;
             FilePath = (editHotkey.FilePath != null) ? string.Copy(editHotkey.FilePath) : null;
             Parameters = (editHotkey.Parameters != null) ? string.Copy(editHotkey.Parameters) : null;
@@ -161,18 +167,7 @@ namespace NHkey.Model
 
         public override string ToString()
         {
-            KeyBinding bind = new KeyBinding();
-            if (Hotkey != null)
-            {
-                bind.Key = KeyInterop.KeyFromVirtualKey(Hotkey.Key);
-                bind.Modifiers = ModifierKeys.None + Hotkey.Modifier;
-            }
-            else
-            {
-                bind.Key = Key.None;
-                bind.Modifiers = ModifierKeys.None;
-            }
-
+            var bind = GetKeyBinding();
             return bind.Key + " + " + bind.Modifiers;
         }
 
@@ -246,6 +241,27 @@ namespace NHkey.Model
             get {
                 return (FilePath != null && hotkey.Registered);
             }
+        }
+
+        /// <summary>
+        /// Generates a <see cref="KeyBinding"/> from 
+        /// <see cref="Hotkey"/> contained values.
+        /// </summary>
+        /// <returns>A KeyBinding with Hotkey values.</returns>
+        public KeyBinding GetKeyBinding()
+        {
+            KeyBinding bind = new KeyBinding();
+            if (Hotkey != null)
+            {
+                bind.Key = KeyInterop.KeyFromVirtualKey(Hotkey.Key);
+                bind.Modifiers = ModifierKeys.None + Hotkey.Modifier;
+            }
+            else
+            {
+                bind.Key = Key.None;
+                bind.Modifiers = ModifierKeys.None;
+            }
+            return bind;
         }
     }
 }

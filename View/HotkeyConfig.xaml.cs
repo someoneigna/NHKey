@@ -17,6 +17,8 @@ using System.Drawing.Imaging;
 using System.ComponentModel;
 
 using NHkey.Model;
+using NHkey.ViewModel;
+using GalaSoft.MvvmLight.Command;
 
 namespace NHkey.View
 {
@@ -25,27 +27,28 @@ namespace NHkey.View
     /// </summary>
     public partial class HotkeyConfigDialog : Window
     {
-        private KeyBinding tempBind = new KeyBinding();
 
+        /// <summary>
+        /// Holds the resulting <see cref="HotkeyAssociation"/>
+        /// from the dialog.
+        /// </summary>
         public HotkeyAssociation ResultHotkey { get; protected set; }
+
+        public HotkeyConfigViewModel ViewModel { get; private set; }
 
         public HotkeyConfigDialog(HotkeyAssociation editHotkey = null)
         {
             InitializeComponent();
 
-            ResultHotkey = (editHotkey != null) ? new HotkeyAssociation(editHotkey) : new HotkeyAssociation();
-
-            DataContext = ResultHotkey;
-
-            // Fill icon with hotkey path (in case of editing a valid hotkey)
-            if (ResultHotkey.FilePath != null)
+            if (editHotkey != null)
             {
-                programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
-                if (ResultHotkey.Icon == null)
-                    ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
-                
+                editHotkey = new HotkeyAssociation(editHotkey);
             }
-            combinationField.Text = ResultHotkey.ToString();
+            ViewModel = new HotkeyConfigViewModel(editHotkey);
+
+            DataContext = ViewModel;
+
+            combinationField.Text = ViewModel.Model.ToString();
         }
 
         /// <summary>
@@ -61,12 +64,7 @@ namespace NHkey.View
 
             if (!string.IsNullOrEmpty(dialog.FileName))
             {
-                ResultHotkey.FilePath = dialog.FileName;
-                ResultHotkey.Icon = Helpers.BitmapHelper.GetIcon(ResultHotkey.FilePath);
-
-                ResultHotkey.Orphaned = !File.Exists(ResultHotkey.FilePath);
-
-                programField.Text = ResultHotkey.FilePath.Substring(ResultHotkey.FilePath.LastIndexOf("\\") + 1);
+                ViewModel.ProgramFile = dialog.FileName;
             }
 
             combinationField.Focus();
@@ -74,9 +72,9 @@ namespace NHkey.View
 
         private void combinationField_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            combinationField.Text = "";
-            tempBind.Key = e.Key;
-            tempBind.Modifiers = Keyboard.Modifiers;
+            combinationField.Text = "Setting combination...";
+            ViewModel.Bind.Key = e.Key;
+            ViewModel.Bind.Modifiers = Keyboard.Modifiers;
         }
 
         /// <summary>
@@ -84,11 +82,11 @@ namespace NHkey.View
         /// </summary>
         private void combinationField_KeyUp(object sender, KeyEventArgs e)
         {
-            tempBind.Modifiers = Keyboard.Modifiers | tempBind.Modifiers;
-            ResultHotkey.SetBind(tempBind);
-            combinationField.Text = ResultHotkey.ToString();
+            ViewModel.Bind.Modifiers = Keyboard.Modifiers | ViewModel.Bind.Modifiers;
+            ViewModel.Model.SetBind(ViewModel.Bind);
+            combinationField.Text = ViewModel.Model.ToString();
 
-            if (ResultHotkey.Invalid)
+            if (ViewModel.Model.Invalid)
             {
                 InvalidHotkeyMsgBox();
             }
@@ -103,18 +101,26 @@ namespace NHkey.View
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ResultHotkey.Name) || ResultHotkey.FilePath == "")
+            if (string.IsNullOrEmpty(ViewModel.ProgramFile))
             {
-                UnfilledFieldsMsgBox();
+                UnfilledFieldMsgBox(FindResource("UnfilledHotkeyNameErrorMessage") as string);
+                nameField.Focus();
+                return;
+            }
+            else if (string.IsNullOrWhiteSpace(ViewModel.ProgramFile))
+            {
+                UnfilledFieldMsgBox(FindResource("UnfilledProgramPathErrorMessage") as string);
+                searchProgramButton.Focus();
                 return;
             }
 
-            if (ResultHotkey.Invalid)
+            if (ViewModel.Model.Invalid)
             {
                 InvalidHotkeyMsgBox();
                 return;
             }
 
+            ResultHotkey = ViewModel.Model;
             this.DialogResult = true;
             this.Close();
         }
@@ -125,6 +131,17 @@ namespace NHkey.View
         private void UnfilledFieldsMsgBox()
         {
             string message = FindResource("UnfilledFieldsMsgBoxMessage") as string;
+            string title = FindResource("UnfilledFieldsMsgBoxTitle") as string;
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+
+
+        /// <summary>
+        /// Show a messagebox indicating that specified
+        /// field is empty.
+        /// </summary>
+        private void UnfilledFieldMsgBox(string message)
+        {
             string title = FindResource("UnfilledFieldsMsgBoxTitle") as string;
             MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }

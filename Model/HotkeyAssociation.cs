@@ -15,7 +15,7 @@ namespace NHkey.Model
     /// manages hotkey status and associates it with a program.
     /// </summary>
     [DataContract]
-    public class HotkeyAssociation : INotifyPropertyChanged, IEquatable<HotkeyAssociation>
+    public class HotkeyAssociation : INotifyPropertyChanged, IDataErrorInfo, IEquatable<HotkeyAssociation>
     {
         private NHotkeyAPI.Hotkey hotkey;
         public NHotkeyAPI.Hotkey Hotkey
@@ -263,5 +263,30 @@ namespace NHkey.Model
             }
             return bind;
         }
+
+        #region IDataErrorNotification 
+        public string Error { get; set; }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (this.GetType().GetProperty(columnName) == null)
+                {
+                    return null;
+                }
+                switch(columnName)
+                {
+                    default:
+                        if (string.IsNullOrWhiteSpace(this.GetType().GetProperty(columnName).GetValue(this, null) as string))
+                        {
+                            return columnName + " field cant be null.";
+                        }
+                        break;
+                }
+                return null;
+            }
+        }
+        #endregion
     }
 }

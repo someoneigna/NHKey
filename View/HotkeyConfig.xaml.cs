@@ -62,10 +62,7 @@ namespace NHkey.View
             dialog.Multiselect = false;
             dialog.ShowDialog();
 
-            if (!string.IsNullOrEmpty(dialog.FileName))
-            {
-                ViewModel.ProgramFile = dialog.FileName;
-            }
+            ViewModel.Model.FilePath = dialog.FileName;
 
             combinationField.Focus();
         }
@@ -107,7 +104,7 @@ namespace NHkey.View
                 nameField.Focus();
                 return;
             }
-            else if (string.IsNullOrWhiteSpace(ViewModel.ProgramFile))
+            else if (string.IsNullOrWhiteSpace(ViewModel.Model.FilePath))
             {
                 UnfilledFieldMsgBox(FindResource("UnfilledProgramPathErrorMessage") as string);
                 searchProgramButton.Focus();

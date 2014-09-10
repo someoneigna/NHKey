@@ -22,6 +22,7 @@
     <system:String x:Key="CancelButton">Cancelar</system:String>
 
     <!-- Messages -->
+    <system:String x:Key="ProgramFieldEmptyMessage">Seleccione programa</system:String>
     <system:String x:Key="UnfilledProgramPathErrorMessage">Debe elegir un archivo o programa.</system:String>
     <system:String x:Key="UnfilledHotkeyNameErrorMessage">Debe definir un nombre para la hotkey.</system:String>
     

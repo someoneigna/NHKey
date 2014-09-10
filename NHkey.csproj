@@ -109,6 +109,7 @@
     <Compile Include="Model\Options.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="View\ProgramNameValueConverter.cs" />
     <Page Include="Resources\Dialogs-en-US.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

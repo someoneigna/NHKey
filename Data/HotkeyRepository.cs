@@ -117,5 +117,15 @@ namespace NHkey.Data
 
             }
         }
+
+        /// <summary>
+        /// Returns if the keybind exists for another hotkey.
+        /// </summary>
+        /// <param name="element">A <see cref="HotkeyAssociation"/></param>
+        /// <returns>If the key combination of the hotkey already is used.</returns>
+        public bool Exists(HotkeyAssociation element)
+        {
+            return context.Collection.Any(hk => hk.Hotkey.Equals(element.Hotkey) && hk.Name != element.Name);
+        }
     }
 }

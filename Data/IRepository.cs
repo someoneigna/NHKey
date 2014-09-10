@@ -12,6 +12,7 @@ namespace NHkey.Data
         void Update(T element);
         void Load();
         void Save();
+        bool Exists(T element);
 
         List<T> GetAll();
     }

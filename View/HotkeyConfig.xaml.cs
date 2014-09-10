@@ -36,6 +36,8 @@ namespace NHkey.View
 
         public HotkeyConfigViewModel ViewModel { get; private set; }
 
+        public RelayCommand SaveCommand { get; private set; }
+
         public HotkeyConfigDialog(HotkeyAssociation editHotkey = null)
         {
             InitializeComponent();
@@ -48,7 +50,52 @@ namespace NHkey.View
 
             DataContext = ViewModel;
 
+            SaveCommand = new RelayCommand(() => Save(), () => Valid());
+            saveButton.Command = SaveCommand;
+
             combinationField.Text = ViewModel.Model.ToString();
+        }
+
+        private void Save()
+        {
+            if (ViewModel.Model.Invalid)
+            {
+                combinationField.Focus();
+                InvalidHotkeyMsgBox();
+                return;
+            }
+
+            ResultHotkey = ViewModel.Model;
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        /// <summary>
+        /// Switchs combination field brush color.
+        /// </summary>
+        /// <param name="valid">Sets Red brush for False, and Black brush for True</param>
+        private void switchCombinationFieldBrush(bool valid)
+        {
+            combinationField.BorderBrush = (valid) ? Brushes.Black : Brushes.Red;
+        }
+
+        /// <summary>
+        /// Verifies validation of the combination and
+        /// ViewModel
+        /// </summary>
+        /// <returns></returns>
+        private bool Valid()
+        {
+            if (ViewModel.Model.Invalid)
+            {
+                switchCombinationFieldBrush(false);
+                return false;
+            }
+            else
+            {
+                switchCombinationFieldBrush(true);
+            }
+            return ViewModel.Valid();
         }
 
         /// <summary>
@@ -69,7 +116,7 @@ namespace NHkey.View
 
         private void combinationField_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            combinationField.Text = FindResource("SettingKeyCombinationLabel") as string; ;
+            combinationField.Text = FindResource("SettingKeyCombinationLabel") as string;
             ViewModel.Bind.Key = e.Key;
             ViewModel.Bind.Modifiers = Keyboard.Modifiers;
         }
@@ -82,10 +129,17 @@ namespace NHkey.View
             ViewModel.Bind.Modifiers = Keyboard.Modifiers | ViewModel.Bind.Modifiers;
             ViewModel.Model.SetBind(ViewModel.Bind);
             combinationField.Text = ViewModel.Model.ToString();
+            bool available = ViewModel.HotkeyAvailable();
 
-            if (ViewModel.Model.Invalid)
+            if (!available)
             {
-                InvalidHotkeyMsgBox();
+                combinationField.Text = FindResource("AlreadyUsedCombinationMessage") as string;
+                switchCombinationFieldBrush(false);
+                return;
+            }
+            else
+            {
+                switchCombinationFieldBrush(true);
             }
         }
 
@@ -96,30 +150,16 @@ namespace NHkey.View
             this.Close();
         }
 
-        private void saveButton_Click(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// Show a messagebox indicating that the key combination is
+        /// already used.
+        /// </summary>
+        private void UnavailableKeybindMsgBox()
         {
-            if (string.IsNullOrEmpty(ViewModel.Model.Name))
-            {
-                UnfilledFieldMsgBox(FindResource("UnfilledHotkeyNameErrorMessage") as string);
-                nameField.Focus();
-                return;
-            }
-            else if (string.IsNullOrWhiteSpace(ViewModel.Model.FilePath))
-            {
-                UnfilledFieldMsgBox(FindResource("UnfilledProgramPathErrorMessage") as string);
-                searchProgramButton.Focus();
-                return;
-            }
-
-            if (ViewModel.Model.Invalid)
-            {
-                InvalidHotkeyMsgBox();
-                return;
-            }
-
-            ResultHotkey = ViewModel.Model;
-            this.DialogResult = true;
-            this.Close();
+            string message = FindResource("UnavailableKeybindMsgBoxMessage") as string;
+            string title = FindResource("UnavailableKeybindMsgBoxTitle") as string;
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
         /// <summary>

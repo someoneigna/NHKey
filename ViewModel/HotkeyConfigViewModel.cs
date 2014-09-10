@@ -44,5 +44,26 @@ namespace NHkey.ViewModel
             Model = (association != null) ? association : new HotkeyAssociation();
             Bind = Model.GetKeyBinding();
         }
+
+        /// <summary>
+        /// Checks if the chosen key combination is
+        /// already used.
+        /// </summary>
+        /// <returns>True if the combination is used, false otherwise</returns>
+        public bool HotkeyAvailable()
+        {
+            return !App.Instance.Repository.Exists(Model);
+        }
+
+        /// <summary>
+        /// Used for validation of Save button.
+        /// </summary>
+        public bool Valid()
+        {
+            return (!string.IsNullOrWhiteSpace(Model.Name) &&
+                    !string.IsNullOrWhiteSpace(Model.FilePath) &&
+                    HotkeyAvailable());
+
+        }
     }
 }

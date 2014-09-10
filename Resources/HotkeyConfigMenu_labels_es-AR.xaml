@@ -13,6 +13,7 @@
     <system:String x:Key="CombinationFieldTooltip">La combinacion de teclas para la hotkey.</system:String>
 
     <system:String x:Key="SettingKeyCombinationLabel">Definiendo keybind...</system:String>
+    <system:String x:Key="AlreadyUsedCombinationMessage">Combinación ya usada</system:String>
 
 
     <!-- Buttons -->
@@ -25,7 +26,11 @@
     <system:String x:Key="ProgramFieldEmptyMessage">Seleccione programa</system:String>
     <system:String x:Key="UnfilledProgramPathErrorMessage">Debe elegir un archivo o programa.</system:String>
     <system:String x:Key="UnfilledHotkeyNameErrorMessage">Debe definir un nombre para la hotkey.</system:String>
-    
+
+    <system:String x:Key="UnavailableKeybindMsgBoxMessage">La combinación se encuentra en uso. Especifique una distinta.</system:String>
+    <system:String x:Key="UnavailableKeybindMsgBoxTitle">Combinación ya existente</system:String>
+
+
     <system:String x:Key="UnfilledFieldsMsgBoxMessage">Deben llenarse los campos antes de continuar.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Campos en estado invalido</system:String>
 

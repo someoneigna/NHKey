@@ -11,9 +11,13 @@ namespace NHkey
 {
     public partial class App : Application
     {
+        private static readonly string HotkeySaveDataFile = "hotkeys.data";
+
         public static App Instance { get; protected set; }
 
         public Logger Log { get; private set; }
+
+        public HotkeyRepository Repository { get; private set; }
 
         public void SwitchLanguage(string language)
         {
@@ -38,6 +42,7 @@ namespace NHkey
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             Application.Current.DispatcherUnhandledException += DispatcherUnhandledExceptionHandler;
 
+            Repository = new HotkeyRepository(new JSONHotkeyContext(HotkeySaveDataFile));
             Instance = this;
             Instance.Log = new Logger(GetType().Namespace + ".log");
         }

@@ -33,7 +33,7 @@ namespace NHkey.ViewModel
 
         public static IntPtr WindowHandle;
 
-        private HotkeyRepository repository;
+        private HotkeyRepository Repository = App.Instance.Repository;
 
         private static string HotkeyDataSaveFilepath = Directory.GetCurrentDirectory() + "\\" + "hotkeys.data";
 
@@ -42,8 +42,6 @@ namespace NHkey.ViewModel
 
         public MainWindowViewModel()
         {
-            repository = new HotkeyRepository(new JSONHotkeyContext(HotkeyDataSaveFilepath));
-
             Hotkeys = LoadFromRepository();
 
             CurrentOptions = new Options();
@@ -59,7 +57,7 @@ namespace NHkey.ViewModel
         /// </summary>
         private Dictionary<int, HotkeyAssociation> LoadFromRepository()
         {
-            var hotkeyDict = repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
+            var hotkeyDict = App.Instance.Repository.GetAll().ToDictionary<HotkeyAssociation, int>((hk) => hk.Hotkey.Id);
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, hotkeyDict.ToList()));
 
@@ -81,10 +79,7 @@ namespace NHkey.ViewModel
         /// </summary>
         public void DisableHotkeys()
         {
-            foreach(var hotkey in Hotkeys.Values.ToList())
-            {
-                hotkey.Disable();
-            }
+            Hotkeys.Values.ToList().ForEach(hk => hk.Disable());
         }
 
         /// <summary>
@@ -93,14 +88,14 @@ namespace NHkey.ViewModel
         /// </summary>
         public void EnableHotkeys()
         {
-            foreach (var hotkey in Hotkeys.Values.ToList())
+            Hotkeys.Values.ToList().ForEach(hk =>
             {
-                if (hotkey.Hotkey.Handle == IntPtr.Zero)
+                if (hk.Hotkey.Handle == IntPtr.Zero)
                 {
-                    hotkey.Hotkey.SetHandle(WindowHandle);
+                    hk.Hotkey.SetHandle(WindowHandle);
                 }
-                hotkey.Enable();
-            }
+                hk.Enable();
+            });
         }
 
         /// <summary>
@@ -128,7 +123,7 @@ namespace NHkey.ViewModel
         /// </summary>
         private void saveHotkeys()
         {
-            repository.Save();
+            App.Instance.Repository.Save();
         }
 
         /// <summary>
@@ -205,7 +200,7 @@ namespace NHkey.ViewModel
         {
             oldHotkey.Disable();
             Hotkeys.Remove(oldHotkey.GetHashCode());
-            repository.Remove(oldHotkey);
+            Repository.Remove(oldHotkey);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldHotkey));
         }
 
@@ -218,7 +213,7 @@ namespace NHkey.ViewModel
         {
             // Swap the oldHotkey data with the new one, maintaining the key.
             Hotkeys[oldHotkey.GetHashCode()].Swap(newHotkey);
-            repository.Update(oldHotkey);
+            Repository.Update(oldHotkey);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newHotkey, oldHotkey));
         }
 
@@ -230,7 +225,7 @@ namespace NHkey.ViewModel
         {
             hotkey.Hotkey.Reload(WindowHandle);
             Hotkeys.Add(hotkey.GetHashCode(), hotkey);
-            repository.Add(hotkey);
+            Repository.Add(hotkey);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, hotkey));
         }
 
@@ -261,7 +256,7 @@ namespace NHkey.ViewModel
         {
             using (var newRepository = new HotkeyRepository(new JSONHotkeyContext(path)))
             {
-                newRepository.CopyFrom(repository);
+                newRepository.CopyFrom(Repository);
                 newRepository.Save();
             }
         }
@@ -277,7 +272,7 @@ namespace NHkey.ViewModel
                 var hotkeys = newRepository.GetAll();
                 DisableHotkeys();
 
-                repository.ImportFrom(hotkeys);
+                Repository.ImportFrom(hotkeys);
             }
             Hotkeys = LoadFromRepository();
             EnableHotkeys();

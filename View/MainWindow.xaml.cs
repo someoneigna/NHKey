@@ -209,6 +209,11 @@ namespace NHkey.View
 
                 dialog.Owner = this;
                 dialog.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+
+                // Disable hotkeys to check for already used ones,
+                // and to avoid unwanted spawning of programs.
+                ViewModel.DisableHotkeys();
+
                 dialog.ShowDialog();
 
                 // Creation dialog returned a result
@@ -230,6 +235,10 @@ namespace NHkey.View
                     holder = dialog.ResultHotkey;
                 }
             }
+
+            // Enable hotkeys again
+            ViewModel.EnableHotkeys();
+
             // The hotkey list is bind to a dictionary, so we have to refresh.
             hotkeyList.Items.Refresh();
         }

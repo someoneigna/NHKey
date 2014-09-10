@@ -13,6 +13,8 @@
     <system:String x:Key="CombinationFieldTooltip">The key combination for the hotkey.</system:String>
 
     <system:String x:Key="SettingKeyCombinationLabel">Setting combination...</system:String>
+    <system:String x:Key="AlreadyUsedCombinationMessage">Already used keybind</system:String>
+
 
     <!-- Buttons -->
     <system:String x:Key="SearchButton">Search</system:String>
@@ -24,7 +26,10 @@
     <system:String x:Key="ProgramFieldEmptyMessage">Select program</system:String>
     <system:String x:Key="UnfilledProgramPathErrorMessage">You must choose a file or program.</system:String>
     <system:String x:Key="UnfilledHotkeyNameErrorMessage">You must set a name for the hotkey.</system:String>
-    
+
+    <system:String x:Key="UnavailableKeybindMsgBoxMessage">They key combination is already use. Specify another one.</system:String>
+    <system:String x:Key="UnavailableKeybindMsgBoxTitle">Keybind already exists</system:String>
+
     <system:String x:Key="UnfilledFieldsMsgBoxMessage">You must fill all the fields before continuing.</system:String>
     <system:String x:Key="UnfilledFieldsMsgBoxTitle">Invalid field state</system:String>
 

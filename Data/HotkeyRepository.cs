@@ -125,7 +125,7 @@ namespace NHkey.Data
         /// <returns>If the key combination of the hotkey already is used.</returns>
         public bool Exists(HotkeyAssociation element)
         {
-            return context.Collection.Any(hk => hk.Hotkey.Equals(element.Hotkey) && hk.Name != element.Name);
+            return context.Collection.Any(hk => hk.Hotkey.Equals(element.Hotkey) && hk != element);
         }
     }
 }

@@ -45,7 +45,12 @@ namespace NHkey.Data
 
         public static NHkey.Model.HotkeyAssociation GetHotkey(HotkeyData data)
         {
-            return NHkey.Model.HotkeyAssociationFactory.MakeHotkeyAssociation(data.Name, data.FilePath, data.Key, data.Modifiers, IntPtr.Zero, data.Parameters);
+            var hotkey = new NHotkeyAPI.Hotkey(data.Key, data.Modifiers);
+
+            var hotkeyAssociation = new HotkeyAssociation
+                (hotkey, data.Name, data.FilePath, data.Parameters);
+
+            return hotkeyAssociation;
         }
 
         public static HotkeyData GetData(HotkeyAssociation hotkey)

@@ -6,6 +6,7 @@ using Forms = System.Windows.Forms;
 using Xunit;
 using System.Collections;
 using System.Windows;
+using System.ComponentModel;
 
 namespace NHotkeyAPI.Tests
 {
@@ -50,6 +51,7 @@ namespace NHotkeyAPI.Tests
         static Tuple<int, int> TestBind = new Tuple<int,int>(TestKey, TestModifier);
         static Tuple<int, int> TestSwitchBind = new Tuple<int, int>(TestKey | 0x01, TestModifier); // Q + Ctrl
         static IntPtr TestHandle = IntPtr.Add(IntPtr.Zero, 1);
+        static IntPtr TestNewHandle = GetDesktopWindow();
 
         private Hotkey TestHotkeyHolder;
 
@@ -64,6 +66,14 @@ namespace NHotkeyAPI.Tests
         }
 
         [Fact]
+        public void CanCopyConstruct()
+        {
+            var hotkey = new Hotkey(TestHotkeyHolder);
+            Assert.True(hotkey != TestHotkeyHolder);
+            Assert.True(hotkey.Equals(TestHotkeyHolder));
+        }
+
+        [Fact]
         public void CanCreateWithoutParameters()
         {
             Assert.DoesNotThrow(() => new Hotkey());
@@ -73,7 +83,7 @@ namespace NHotkeyAPI.Tests
         public void CanChangeBind()
         {
             TestHotkeyHolder.SwitchBind(TestBind);
-            
+
             TestHotkeyHolder.SwitchBind(TestSwitchBind);
 
             Assert.True(TestHotkeyHolder.Equals(TestSwitchBind));
@@ -94,14 +104,28 @@ namespace NHotkeyAPI.Tests
         public void CanReloadHotkey()
         {
             TestHotkeyHolder.Register();
-            TestHotkeyHolder.Unregister();
 
             TestHotkeyHolder.Reload(TestHandle);
-            
+
             Assert.True(TestHotkeyHolder.Registered);
+        }
 
-            TestHotkeyHolder.Dispose();
+        [Fact]
+        public void CanSetHandle()
+        {
+            TestHotkeyHolder.SetHandle(TestNewHandle);
 
+            Assert.Equal<IntPtr>(TestHotkeyHolder.Handle, TestNewHandle);
+        }
+
+        [Fact]
+        public void CanSetHandleWhenRegistered()
+        {
+            TestHotkeyHolder.Register();
+            TestHotkeyHolder.SetHandle(TestNewHandle);
+
+            Assert.True(TestHotkeyHolder.Handle == TestNewHandle &&
+                        TestHotkeyHolder.Registered);
         }
     }
 }

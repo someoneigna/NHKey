@@ -66,11 +66,6 @@ namespace NHkey.NHotkeyAPI
         {
         }
 
-        public Hotkey(Tuple<int, int> bind, IntPtr wHandle)
-            : this(bind.Item1, bind.Item2, wHandle)
-        {
-        }
-
         public Hotkey(int vkey, int vmod, IntPtr wHandle)
         {
             Handle = wHandle;

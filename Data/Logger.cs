@@ -6,6 +6,9 @@ using System.Text;
 
 namespace NHkey.Data
 {
+    /// <summary>
+    /// Provides a log for unhandled errors and exceptions.
+    /// </summary>
     public class Logger : IDisposable
     {
         private static string defaultPath = "App.log";
@@ -36,12 +39,12 @@ namespace NHkey.Data
             catch(PathTooLongException pathLong)
             {
                 OpenDefaultPath();
-                Append("Log", "Could open " + path + " got an exception: " + pathLong.Message);
+                Append("Log", "Could not open " + path + " got an exception: " + pathLong.Message);
             }
             catch(UnauthorizedAccessException access)
             {
                 OpenDefaultPath();
-                Append("Log", "Could open " + path + " got an exception: " + access.Message);
+                Append("Log", "Could not open " + path + " got an exception: " + access.Message);
             }
             catch (IOException)
             {

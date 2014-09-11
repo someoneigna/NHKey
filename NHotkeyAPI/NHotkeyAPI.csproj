@@ -43,6 +43,9 @@
   <ItemGroup>
     <Compile Include="Hotkey.cs" />
     <Compile Include="HotkeyFactory.cs" />
+    <Compile Include="IHotkey.cs" />
+    <Compile Include="INativeMethods.cs" />
+    <Compile Include="NativeAPI.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

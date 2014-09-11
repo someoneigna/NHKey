@@ -5,9 +5,38 @@ using System.Windows.Interop;
 using Forms = System.Windows.Forms;
 using Xunit;
 using System.Collections;
+using System.Windows;
 
 namespace NHotkeyAPI.Tests
 {
+    class TestNativeMethods : NHotkeyAPI.INativeMethods
+    {
+        private bool registered;
+        private IntPtr lastHandle;
+
+        public bool Register(IntPtr hWnd, int id, int fsModifiers, int vk)
+        {
+            lastHandle = hWnd;
+            registered = !registered;
+            return (registered && hWnd != IntPtr.Zero);
+        }
+
+        public bool Unregister(IntPtr hWnd, int id)
+        {
+            if (lastHandle != hWnd)
+            {
+                return false;
+            }
+            else
+            {
+                lastHandle = IntPtr.Zero;
+            }
+            registered = !registered;
+
+            return !registered;
+        }
+    }
+
     public class HotkeyFixture
     {
         // Used to get a test handle to register the hotkeys
@@ -20,18 +49,18 @@ namespace NHotkeyAPI.Tests
         static int TestMultipleModifier = 0x11 | 0x10; // Ctrl and Shift
         static Tuple<int, int> TestBind = new Tuple<int,int>(TestKey, TestModifier);
         static Tuple<int, int> TestSwitchBind = new Tuple<int, int>(TestKey | 0x01, TestModifier); // Q + Ctrl
+        static IntPtr TestHandle = IntPtr.Add(IntPtr.Zero, 1);
 
-        readonly Forms.Form Window;
-        readonly IntPtr TestWindowHandle;
+        private Hotkey TestHotkeyHolder;
+
+        private Hotkey MakeTestHotkey(int key, int modifiers, IntPtr handle)
+        {
+            return new Hotkey(new TestNativeMethods(), key, modifiers, handle);
+        }
 
         public HotkeyFixture()
         {
-            Window = new Forms.Form();
-            Window.Visible = false;
-
-            TestWindowHandle = Window.Handle;
-            Window.Show();
-
+            TestHotkeyHolder = MakeTestHotkey(TestKey, TestModifier, TestHandle);
         }
 
         [Fact]
@@ -43,45 +72,36 @@ namespace NHotkeyAPI.Tests
         [Fact]
         public void CanChangeBind()
         {
-            var hotkey = new Hotkey(TestKey, TestModifier);
+            TestHotkeyHolder.SwitchBind(TestBind);
             
-            hotkey.SwitchBind(TestSwitchBind);
+            TestHotkeyHolder.SwitchBind(TestSwitchBind);
 
-            Assert.True(hotkey.Equals(TestSwitchBind));
+            Assert.True(TestHotkeyHolder.Equals(TestSwitchBind));
         }
 
-        /*[Fact]
-        /// Register() Misbehaves when testing.
+        [Fact]
         public void UnregistersCorrectlyOnDispose()
         {
-            var hotkey = new Hotkey(TestKey, TestModifier, TestWindowHandle);
-            
-            hotkey.Register();
-            Assert.True(hotkey.Registered);
+            TestHotkeyHolder.Register();
+            Assert.True(TestHotkeyHolder.Registered);
 
-            hotkey.Dispose();
+            TestHotkeyHolder.Dispose();
 
-            Assert.False(hotkey.Registered);
-        } */
+            Assert.False(TestHotkeyHolder.Registered);
+        }
 
         [Fact]
         public void CanReloadHotkey()
         {
-            var hotkey = new Hotkey(TestBind, TestWindowHandle);
-            hotkey.Register();
+            TestHotkeyHolder.Register();
+            TestHotkeyHolder.Unregister();
 
-            var temporalWindowForm = new Forms.Form();
-            temporalWindowForm.Visible = false;
-            temporalWindowForm.Show();
-
-            hotkey.Reload(temporalWindowForm.Handle);
+            TestHotkeyHolder.Reload(TestHandle);
             
-            Assert.True(hotkey.Registered && hotkey.Handle != TestWindowHandle);
+            Assert.True(TestHotkeyHolder.Registered);
 
-            hotkey.Dispose();
+            TestHotkeyHolder.Dispose();
 
-            temporalWindowForm.Dispose();
         }
-
     }
 }

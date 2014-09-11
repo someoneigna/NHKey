@@ -12,7 +12,7 @@ namespace NHkey.NHotkeyAPI
     /// Contains a key bind of virtual keys to
     /// use with WinAPI RegisterHotkey()
     /// </summary>
-    public class Hotkey : IDisposable, IEquatable<Hotkey>, IEquatable<Tuple<int, int>>
+    public class Hotkey : IDisposable, IEquatable<Hotkey>, IEquatable<Tuple<int, int>>, IHotkey
     {
         #region Properties
 
@@ -51,6 +51,14 @@ namespace NHkey.NHotkeyAPI
         public int Id { get { return GetHashCode(); } }
 
         #endregion
+
+        private INativeMethods NativeAPI = new NativeAPI();
+
+        public Hotkey(INativeMethods nativeApi,
+            int key, int modifiers, IntPtr handle) : this(key, modifiers, handle)
+        {
+            NativeAPI = nativeApi;
+        }
 
         #region Constructors
         public Hotkey(int vkey, int vmod)
@@ -126,7 +134,7 @@ namespace NHkey.NHotkeyAPI
         /// <returns>True if </returns>
         public bool Register()
         {
-            bool success = NativeMethods.RegisterHotKey(Handle, Id, Modifier, Key);
+            bool success = NativeAPI.Register(Handle, Id, Modifier, Key);
             if (!success)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -144,7 +152,7 @@ namespace NHkey.NHotkeyAPI
         /// <exception cref="Win32Exception">If failed to unregister keybind properly.</exception>
         public bool Unregister()
         {
-            bool success = NativeMethods.UnregisterHotKey(Handle, Id);
+            bool success = NativeAPI.Unregister(Handle, Id);
             if (!success)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());

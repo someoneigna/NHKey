@@ -13,6 +13,11 @@ namespace NHkey.Model
     /// </summary>
     public class Options : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Custom fields for program options,
+        /// B_: means boolean field
+        /// S_: means string field
+        /// </summary>
         public enum Field
         {
             B_INIT_HIDDEN,
@@ -21,7 +26,7 @@ namespace NHkey.Model
             MAX_OPTIONS
         };
 
-        private readonly string saveFile = Directory.GetCurrentDirectory() + "\\" + "config.data";
+        private readonly string saveFile = Directory.GetCurrentDirectory() + @"\config.data";
 
         private bool loaded;
         private const int FIELD_NAME_POS = 0;
@@ -32,13 +37,24 @@ namespace NHkey.Model
         private Dictionary<string, object> map = new Dictionary<string, object>();
 
         private static readonly string[] availableLanguages = new string[] { "Spanish", "English" };
+
+        /// <summary>
+        /// Used to set program language resource dictionary
+        /// on start.
+        /// </summary>
         public static readonly Dictionary<string, string> languageFile = new Dictionary<string, string>()
         {
             {"Spanish", "es-AR"},
             {"English", "en-US"}
         };
 
-        public string LanguageFile { get { return languageFile[Language]; } }
+        public string LanguageFile
+        {
+            get
+            {
+                return languageFile[Language];
+            }
+        }
 
         public string[] AvailableLanguages
         {
@@ -68,8 +84,17 @@ namespace NHkey.Model
             if (!loaded) { Load(); };
         }
 
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="other">A valid instance of <see cref="Options"/></param>
         public Options(Options other) : this()
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException("Cant copy a null Options instance.");
+            }
+
             // Copy values from other into this
             for (int i = 0; i < value.Length; i++)
             {
@@ -82,7 +107,7 @@ namespace NHkey.Model
         {
             get
             {
-                return (string)this.value[(int)Field.S_LANGUAGE];
+                return (string)Get(Field.S_LANGUAGE);
             }
             set
             {
@@ -130,6 +155,7 @@ namespace NHkey.Model
             }
         }
 
+        #region Helper methods
         private void Set(Field option, object value)
         {
             int index = (int)option;
@@ -140,6 +166,7 @@ namespace NHkey.Model
         {
             return this.value[(int)option];
         }
+        #endregion
 
         /// <summary>
         /// Add the application into registry to run at Windows startup.
@@ -188,6 +215,10 @@ namespace NHkey.Model
             WriteSaveFile();
         }
 
+        /// <summary>
+        /// Loads program options file and
+        /// sets current option state.
+        /// </summary>
         public void Load()
         {
             if (!File.Exists(saveFile)) return;
@@ -213,7 +244,7 @@ namespace NHkey.Model
                             }
                         }
                     }
-                    Language = value[(int)Field.S_LANGUAGE] as string;
+                    Language = Get(Field.S_LANGUAGE) as string;
                 }
             }
             catch (IOException ex)
@@ -222,21 +253,6 @@ namespace NHkey.Model
             }
             finally { }
             loaded = true;
-        }
-
-        public string[] GetNames()
-        {
-            return this.str;
-        }
-
-        public object[] GetValues()
-        {
-            return this.value;
-        }
-
-        public object GetValue(string value)
-        {
-            return map[value];
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -7,56 +7,66 @@ using System.Text;
 
 namespace NHkey.Data
 {
+    /// <summary>
+    /// Handles persistance of <see cref="HotkeyAssociation"/>s
+    /// through a <see cref="JSONHotkeyContext"/> or <see cref="XMLHotkeyContext"/>
+    /// </summary>
     public class HotkeyRepository : IRepository<Model.HotkeyAssociation>, IDisposable
     {
-        private readonly IContext<Model.HotkeyAssociation> context;
+        private readonly IContext<HotkeyAssociation> dataSource;
 
-        public HotkeyRepository(IContext<Model.HotkeyAssociation> ncontext)
+        /// <summary>
+        /// Creates a HotkeyRepository with
+        /// <paramref name="dataContext"/> as data
+        /// source for the hotkeys.
+        /// </summary>
+        /// <param name="ncontext"></param>
+        public HotkeyRepository(IContext<HotkeyAssociation> dataContext)
         {
-            context = ncontext;
+            dataSource = dataContext;
             Load();
         }
 
         public void Add(Model.HotkeyAssociation element)
         {
-            if (!context.Collection.Contains(element))
+            if (!dataSource.Collection.Contains(element))
             {
-                context.Add(element);
+                dataSource.Add(element);
             }
             else
             {
-                context.Update(element);
+                dataSource.Update(element);
             }
         }
 
         public void Remove(Model.HotkeyAssociation element)
         {
-            context.Remove(element);
+            dataSource.Remove(element);
         }
 
         public void Load()
         {
-            context.Load();
+            dataSource.Load();
         }
 
         public void Save()
         {
-            context.Save();
+            dataSource.Save();
         }
 
         public List<Model.HotkeyAssociation> GetAll()
         {
-            return context.GetAll().ToList<Model.HotkeyAssociation>();
+            return dataSource.GetAll().ToList<Model.HotkeyAssociation>();
         }
 
         public void Dispose()
         {
-            context.Save();
+            dataSource.Save();
         }
 
         public void Update(Model.HotkeyAssociation element)
         {
-            context.Update(element);
+            dataSource.Update(element);
         }
 
         /// <summary>
@@ -65,17 +75,17 @@ namespace NHkey.Data
         /// <param name="repository">A <see cref="=HotkeyRepository"/> to copy hotkeys from.</param>
         internal void CopyFrom(HotkeyRepository repository)
         {
-            context.Add(repository.GetAll());
+            dataSource.Add(repository.GetAll());
         }
 
         internal void ImportFrom(List<Model.HotkeyAssociation> readHotkeys)
         {
-            var allHotkeys = context.GetAll() as List<HotkeyAssociation>;
+            var allHotkeys = dataSource.GetAll() as List<HotkeyAssociation>;
 
             // If we had no hotkeys import all
             if (allHotkeys.Count == 0 && readHotkeys.Count > 0)
             {
-                context.Add(readHotkeys);
+                dataSource.Add(readHotkeys);
             }
             else
             {
@@ -85,9 +95,7 @@ namespace NHkey.Data
 
         /// <summary>
         /// Compares current hotkeys in the respository with the ones imported from a xml/json file.
-        ///
-        /// They are differenced by name. ( Using the hash code would do things unnecessarily complex
-        /// (ej: changes in handles affecting the hash) )
+        /// They are differenced by name.
         /// </summary>
         /// <param name="readHotkeys">The <see cref="HotkeyAssociation"/>s read from a file.</param>
         /// <param name="currentHotkeys">The <see cref="HotkeyAssociation"/>s currently in the repository.</param>
@@ -106,13 +114,13 @@ namespace NHkey.Data
                     {
                         // Update the old hotkey with the new values
                         updated.Swap(readHotkeys[i]);
-                        context.Update(updated);
+                        dataSource.Update(updated);
                     }
                 }
                 // If no key matches by key plus values neither by only key, then it's a new one. Add it to repository.
                 else
                 {
-                    context.Add(readHotkeys[i]);
+                    dataSource.Add(readHotkeys[i]);
                 }
 
             }
@@ -125,7 +133,7 @@ namespace NHkey.Data
         /// <returns>If the key combination of the hotkey already is used.</returns>
         public bool Exists(HotkeyAssociation element)
         {
-            return context.Collection.Any(hk => hk.Hotkey.Equals(element.Hotkey) && hk != element);
+            return dataSource.Collection.Any(hk => hk.Hotkey.Equals(element.Hotkey) && hk != element);
         }
     }
 }

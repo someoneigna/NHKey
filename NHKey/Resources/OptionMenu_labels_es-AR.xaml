@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="OptionMenuTitle">Opciones</system:String>
+
+    <!-- Labels -->
+    <system:String x:Key="InitHidden">Iniciar invisible</system:String>
+    <system:String x:Key="InitWithWindows">Iniciar con Windows</system:String>
+    <system:String x:Key="LanguageLabel">Lenguaje</system:String>
+
+    <!-- Buttons -->
+    <system:String x:Key="SaveButton">Guardar</system:String>
+    <system:String x:Key="CancelButton">Cancelar</system:String>
+
+</ResourceDictionary>
